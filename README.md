@@ -26,43 +26,58 @@ ML-Playground/
 
 ## 📚 Contents
 
+
 ### 1. [Machine Learning](./machine_learning/)
 
 - **[Intro to Machine Learning](./machine_learning/intro/intro_to_machine_learning_day2.ipynb)**
+
 - **Data Preprocessing:**  
-  [Data Preprocessing](./machine_learning/data_preprocessing/data_preprocessing.ipynb)
+  - [Data Preprocessing](./machine_learning/data_preprocessing/data_preprocessing.ipynb)
+
 - **Supervised Learning:**  
-  - [Linear Regression](./machine_learning/supervised/linear_regression.ipynb)  
-  - [Logistic Regression](./machine_learning/supervised/logistic_regression.ipynb)  
-  - [Decision Tree](./machine_learning/supervised/decision_tree.ipynb)  
-  - [Random Forest](./machine_learning/supervised/random_forest.ipynb)  
-  - [Support Vector Machine (SVM)](./machine_learning/supervised/svm.ipynb)  
-  - [K-Nearest Neighbors (KNN)](./machine_learning/supervised/knn.ipynb)  
-  - [Gradient Boosting](./machine_learning/supervised/gradient_boosting.ipynb)  
+  - [Decision Tree](./machine_learning/supervised/decision_tree.ipynb)
+  - [Gradient Boosting](./machine_learning/supervised/gradient_boosting.ipynb)
+  - [Hyperparameter Tuning](./machine_learning/supervised/hyperparameter_tunning.ipynb)
+  - [K-Nearest Neighbors (KNN)](./machine_learning/supervised/knn.ipynb)
+  - [Linear Regression](./machine_learning/supervised/linear_regression.ipynb)
+  - [Logistic Regression](./machine_learning/supervised/logistic_regression.ipynb)
   - [Evaluation Metrics](./machine_learning/supervised/ml_evaluation_metrics.ipynb)
+  - [Random Forest](./machine_learning/supervised/random_forest.ipynb)
+  - [Support Vector Machine (SVM)](./machine_learning/supervised/svm.ipynb)
+  - [XGBoost Algorithm](./machine_learning/supervised/xgboost_algo.ipynb)
+
 - **Unsupervised Learning:**  
-  - [K-Means Clustering](./machine_learning/unsupervised/k_means_clustering.ipynb)  
-  - [Gaussian Mixture Model (GMM)](./machine_learning/unsupervised/gmm_clustering.ipynb)  
-  - [PCA & t-SNE](./machine_learning/unsupervised/pca_tsne.ipynb)
+  - [Association Rule Mining](./machine_learning/unsupervised/association_rule_mining_algo.ipynb)
+  - [DBSCAN Clustering](./machine_learning/unsupervised/dbscan_clustering.ipynb)
+  - [Gaussian Mixture Model (GMM)](./machine_learning/unsupervised/gmm_clustering.ipynb)
+  - [Hierarchical Clustering](./machine_learning/unsupervised/hierarchical_clustering.ipynb)
+  - [K-Means Clustering](./machine_learning/unsupervised/k_means_clustering.ipynb)
+  - [Mean Shift Clustering](./machine_learning/unsupervised/mean_shift_clustering.ipynb)
+  - [PCA](./machine_learning/unsupervised/PCA.ipynb)
+
+- **Reinforcement Learning:**
+  - [RL Intro](./machine_learning/reinforcement_learning/RL_intro.ipynb)
 
 ---
+
 
 ### 2. [Deep Learning](./deep_learning/)
 
-- [Neural Network Basics](./deep_learning/neural_network_basics.ipynb)
-- [Multi-Layer Perceptron (MLP)](./deep_learning/multi_layer_perceptron.ipynb)
-- [Convolutional Neural Network (CNN)](./deep_learning/cnn_image_classification.ipynb)
-- [Recurrent Neural Network (RNN)](./deep_learning/rnn_sequence_modeling.ipynb)
-- [LSTM for Time Series](./deep_learning/lstm_time_series.ipynb)
+- [CNN Image Classification](./deep_learning/cnn_image_classification.ipynb)
 - [Deep Learning Overview](./deep_learning/deep_learning_overview.ipynb)
+- [LSTM Time Series](./deep_learning/lstm_time_series.ipynb)
+- [Multi-Layer Perceptron](./deep_learning/multi_layer_perceptron.ipynb)
+- [Neural Network Basics](./deep_learning/neural_network_basics.ipynb)
+- [RNN Sequence Modeling](./deep_learning/rnn_sequence_modeling.ipynb)
 
 ---
+
 
 ### 3. [Advanced Topics](./advanced_topics/)
 
 - [Natural Language Processing (NLP)](./advanced_topics/nlp_intro.ipynb)
-- [Reinforcement Learning](./advanced_topics/reinforcement_learning_intro.ipynb)
-- [Prompt Engineering](./advanced_topics/prompt_engineering_basics.ipynb)
+- [Prompt Engineering Basics](./advanced_topics/prompt_engineering_basics.ipynb)
+- [Reinforcement Learning Intro](./advanced_topics/reinforcement_learning_intro.ipynb)
 
 ---
 
