@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Q-Learning - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">Q-Learning</span>
+
+<a href="https://github.com/Jacobgokul/ML-Playground/blob/main/machine_learning/reinforcement_learning/QLearning.ipynb" target="_blank" style="color:#94a3b8;text-decoration:none;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;margin-left:auto;transition:.15s" onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#94a3b8'"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> View Notebook</a>
+</div>
+<div class="container">
+
+<h1>Q-Learning</h1>
+<p class="subtitle">A model-free reinforcement learning algorithm that learns the optimal action-selection policy using a Q-table of state-action values.</p>
+
+<h2>What It Is</h2>
+<p>Q-Learning learns a Q-table where each entry Q(state, action) represents the expected cumulative reward of taking that action in that state and following the optimal policy afterward. The agent updates this table through experience until it converges to the optimal values.</p>
+
+<div class="highlight"><p>Q-Learning is the foundation of modern RL. It is off-policy (learns the optimal policy regardless of the agent's current behavior) and guaranteed to converge to the optimal solution given enough exploration.</p></div>
+
+<h2>The Q-Learning Formula</h2>
+<div class="formula">Q(s, a) = Q(s, a) + alpha * (reward + gamma * max(Q(s', a')) - Q(s, a))
+
+Where:
+  s       = current state
+  a       = action taken
+  s'      = next state after taking action a
+  alpha   = learning rate (0 to 1) - how fast it learns
+  gamma   = discount factor (0 to 1) - importance of future rewards
+  reward  = immediate reward received
+  max(Q(s', a')) = best possible Q-value from the next state</div>
+
+<h2>Key Parameters</h2>
+<div class="grid">
+<div class="grid-item">
+<h4>alpha (Learning Rate)</h4>
+<p>Controls how much new information overrides old. High = fast learning but unstable. Low = slow but stable. Typical: 0.1</p>
+</div>
+<div class="grid-item">
+<h4>gamma (Discount Factor)</h4>
+<p>How much future rewards matter. 0 = greedy (only immediate). 1 = far-sighted. Typical: 0.9</p>
+</div>
+<div class="grid-item">
+<h4>epsilon (Exploration Rate)</h4>
+<p>Probability of choosing a random action instead of the best known. Balances exploration vs exploitation. Typical: 0.1-0.2</p>
+</div>
+<div class="grid-item">
+<h4>episodes</h4>
+<p>Number of complete training runs. More episodes = better learning. Typical: 500-10000</p>
+</div>
+</div>
+
+<h2>How It Works</h2>
+<div class="card">
+<div class="card-title">Algorithm Steps</div>
+<ol>
+<li><strong>Initialize</strong> Q-table to zeros for all (state, action) pairs</li>
+<li><strong>For each episode:</strong></li>
+<li style="margin-left:20px"><strong>Start</strong> at the initial state</li>
+<li style="margin-left:20px"><strong>Choose action</strong> using epsilon-greedy: random with probability epsilon, best Q-value otherwise</li>
+<li style="margin-left:20px"><strong>Take action</strong>, observe new state and reward</li>
+<li style="margin-left:20px"><strong>Update Q-table</strong> using the Q-learning formula</li>
+<li style="margin-left:20px"><strong>Repeat</strong> until the episode ends (goal reached or max steps)</li>
+<li><strong>After training:</strong> the Q-table contains optimal action values. Always pick the action with the highest Q-value for each state.</li>
+</ol>
+</div>
+
+<h2>Code: Grid World (4x4)</h2>
+<p>The agent starts at (0,0) and must reach (3,3). Each move costs -1 reward. Reaching the goal gives +10.</p>
+<div class="code">import numpy as np
+import random
+
+# Grid size (4x4 matrix)
+n_rows = 4
+n_cols = 4
+
+# Actions
+actions = ['up', 'down', 'left', 'right']
+action_dict = {'up': 0, 'down': 1, 'left': 2, 'right': 3}
+
+# Q-table [state_row][state_col][action]
+q_table = np.zeros((n_rows, n_cols, len(actions)))
+
+# Parameters
+alpha = 0.1       # learning rate
+gamma = 0.9       # discount factor
+epsilon = 0.2     # exploration factor
+episodes = 500
+
+# Reward function
+def get_reward(state):
+    if state == (3, 3):
+        return 10
+    else:
+        return -1
+
+# Environment transition
+def take_action(state, action):
+    row, col = state
+
+    if action == 'up':
+        row = max(row - 1, 0)
+    elif action == 'down':
+        row = min(row + 1, n_rows - 1)
+    elif action == 'left':
+        col = max(col - 1, 0)
+    elif action == 'right':
+        col = min(col + 1, n_cols - 1)
+
+    return (row, col)
+
+# Training loop
+for episode in range(episodes):
+    state = (0, 0)
+
+    while state != (3, 3):  # Until it reaches the goal
+        if random.uniform(0, 1) < epsilon:
+            action = random.choice(actions)
+        else:
+            # Pick best action from Q-table
+            action = actions[np.argmax(q_table[state[0], state[1]])]
+
+        new_state = take_action(state, action)
+        reward = get_reward(new_state)
+
+        old_q = q_table[state[0], state[1], action_dict[action]]
+        next_max = np.max(q_table[new_state[0], new_state[1]])
+
+        # Q-learning formula
+        new_q = old_q + alpha * (reward + gamma * next_max - old_q)
+        q_table[state[0], state[1], action_dict[action]] = new_q
+
+        state = new_state
+
+print("Training complete!")</div>
+
+<h2>Code: Test the Learned Policy</h2>
+<div class="code"># Show the path taken by the agent from (0,0) to (3,3)
+state = (0, 0)
+path = [state]
+
+while state != (3, 3):
+    # Choose the best action (greedy - no exploration)
+    best_action_idx = np.argmax(q_table[state[0], state[1]])
+    best_action = actions[best_action_idx]
+
+    # Move to the next state
+    new_state = take_action(state, best_action)
+    path.append(new_state)
+
+    # Break if stuck (safety condition)
+    if new_state == state:
+        print("Agent is stuck!")
+        break
+
+    state = new_state
+
+# Print the optimal path
+print("Optimal path from (0,0) to (3,3):")
+for step in path:
+    print(step)
+
+# Expected output: the agent follows the shortest path
+# (0,0) -> (1,0) -> (2,0) -> (3,0) -> (3,1) -> (3,2) -> (3,3)</div>
+
+<h2>Q-Learning vs SARSA</h2>
+<table>
+<tr><th>Feature</th><th>Q-Learning</th><th>SARSA</th></tr>
+<tr><td>Policy type</td><td>Off-policy (learns optimal regardless of behavior)</td><td>On-policy (learns from actions actually taken)</td></tr>
+<tr><td>Update rule</td><td>Uses max Q(s', a') for next state</td><td>Uses Q(s', a') where a' is the actual next action</td></tr>
+<tr><td>Exploration effect</td><td>Ignores exploration in Q-value updates</td><td>Exploration affects Q-value updates</td></tr>
+<tr><td>Convergence</td><td>Converges to optimal Q-values</td><td>Converges to policy being followed</td></tr>
+<tr><td>Risk tolerance</td><td>Can learn riskier but optimal paths</td><td>Learns safer paths that avoid penalties</td></tr>
+</table>
+
+<h2>When to Use Q-Learning</h2>
+<table>
+<tr><th>Good For</th><th>Not Ideal For</th></tr>
+<tr><td>Small, discrete state/action spaces</td><td>Continuous state spaces (use DQN instead)</td></tr>
+<tr><td>Grid worlds, simple games, routing</td><td>Very large state spaces (Q-table becomes huge)</td></tr>
+<tr><td>Learning optimal policies off-policy</td><td>When you need the agent to be safe during training (use SARSA)</td></tr>
+<tr><td>Foundation for understanding Deep RL</td><td>Complex environments like Atari, robotics (use DQN/PPO)</td></tr>
+</table>
+
+<div class="warning"><p>Q-Learning stores Q-values in a table, which only works for small, discrete state spaces. For large or continuous spaces (images, continuous control), use Deep Q-Networks (DQN) which replace the table with a neural network.</p></div>
+
+<p><span class="tag">Reinforcement Learning</span> <span class="tag">Q-Learning</span> <span class="tag">Model-Free</span> <span class="tag">Value-Based</span></p>
+
+</div>
+</body>
+</html>

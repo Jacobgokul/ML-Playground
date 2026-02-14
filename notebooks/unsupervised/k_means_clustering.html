@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>K-Means Clustering - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">K-Means Clustering</span>
+
+<a href="https://github.com/Jacobgokul/ML-Playground/blob/main/machine_learning/unsupervised/k_means_clustering.ipynb" target="_blank" style="color:#94a3b8;text-decoration:none;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;margin-left:auto;transition:.15s" onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#94a3b8'"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> View Notebook</a>
+</div>
+<div class="container">
+
+<h1>K-Means Clustering</h1>
+<p class="subtitle">An unsupervised algorithm that partitions data into K distinct clusters by minimizing within-cluster variance.</p>
+
+<h2>What It Is</h2>
+<p>K-Means groups data points into K clusters based on distance to cluster centers (centroids). Each point belongs to the cluster whose centroid is nearest. It minimizes variance within clusters while maximizing variance between them.</p>
+
+<div class="highlight"><p>K-Means is the most widely used clustering algorithm. It is fast, scales well to large datasets, and is easy to interpret.</p></div>
+
+<h2>How It Works</h2>
+<div class="card">
+<div class="card-title">Algorithm Steps</div>
+<ol>
+<li><strong>Choose K</strong> &mdash; Pick the number of clusters. Use the Elbow Method or Silhouette Score if unsure.</li>
+<li><strong>Initialize centroids</strong> &mdash; Randomly select K data points as starting centroids (k-means++ improves this).</li>
+<li><strong>Assign points</strong> &mdash; Compute Euclidean distance from each point to every centroid. Assign each point to the nearest centroid.</li>
+<li><strong>Update centroids</strong> &mdash; Recompute each centroid as the mean of all points assigned to that cluster.</li>
+<li><strong>Repeat</strong> &mdash; Iterate steps 3-4 until centroids stabilize or max iterations is reached.</li>
+<li><strong>Output</strong> &mdash; K final clusters with each point assigned to one group.</li>
+</ol>
+</div>
+
+<h2>Distance Formula</h2>
+<div class="formula">Euclidean Distance = sqrt( (x1 - x2)^2 + (y1 - y2)^2 + ... + (xn - yn)^2 )</div>
+
+<h2>Code: Generate Data and Cluster</h2>
+<div class="code">import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.datasets import make_blobs
+
+# Generate synthetic data with 3 clusters
+X, y = make_blobs(n_samples=300, centers=3, cluster_std=1.05, random_state=42)
+
+# Scatter plot of the dataset
+plt.scatter(X[:, 0], X[:, 1], s=50, alpha=0.6)
+plt.title("Generated Dataset for K-Means Clustering")
+plt.show()</div>
+
+<h2>Code: Fit K-Means</h2>
+<div class="code"># Apply K-Means clustering with K=3
+kmeans = KMeans(n_clusters=3, init='k-means++', max_iter=300, random_state=42)
+y_kmeans = kmeans.fit_predict(X)
+
+# Get cluster centers
+centroids = kmeans.cluster_centers_
+print(centroids)</div>
+
+<h2>Code: Visualize Clusters</h2>
+<div class="code"># Visualizing the clustered data
+plt.scatter(X[y_kmeans == 0, 0], X[y_kmeans == 0, 1], s=50, c='red', label='Cluster 1')
+plt.scatter(X[y_kmeans == 1, 0], X[y_kmeans == 1, 1], s=50, c='blue', label='Cluster 2')
+plt.scatter(X[y_kmeans == 2, 0], X[y_kmeans == 2, 1], s=50, c='green', label='Cluster 3')
+
+# Plot cluster centroids
+plt.scatter(centroids[:, 0], centroids[:, 1], s=200, c='yellow', marker='X',
+            edgecolors='black', label='Centroids')
+plt.legend()
+plt.title("K-Means Clustering Results")
+plt.show()</div>
+
+<h2>Code: Predict New Points</h2>
+<div class="code"># New data points to classify
+new_points = np.array([[2, 3], [-4, 7], [6, -2]])
+# Predict the cluster for new data points
+predicted_clusters = kmeans.predict(new_points)
+
+# Print results
+for i, point in enumerate(new_points):
+    print(f"Point {point} belongs to Cluster {predicted_clusters[i]}")
+
+# Plot with new points
+plt.scatter(X[y_kmeans == 0, 0], X[y_kmeans == 0, 1], s=50, c='red', label='Cluster 1')
+plt.scatter(X[y_kmeans == 1, 0], X[y_kmeans == 1, 1], s=50, c='blue', label='Cluster 2')
+plt.scatter(X[y_kmeans == 2, 0], X[y_kmeans == 2, 1], s=50, c='green', label='Cluster 3')
+plt.scatter(centroids[:, 0], centroids[:, 1], s=200, c='yellow', marker='X',
+            edgecolors='black', label='Centroids')
+plt.scatter(new_points[:, 0], new_points[:, 1], s=150, c='purple', marker='D', label='New Points')
+plt.legend()
+plt.title("K-Means Clustering with Predictions")
+plt.show()</div>
+
+<h2>When to Use K-Means</h2>
+<table>
+<tr><th>Good For</th><th>Not Ideal For</th></tr>
+<tr><td>Roughly spherical, evenly-sized clusters</td><td>Non-spherical or irregular-shaped clusters</td></tr>
+<tr><td>Large datasets (scales well)</td><td>Clusters with very different sizes/densities</td></tr>
+<tr><td>When K is known or easily estimated</td><td>When the number of clusters is unknown</td></tr>
+<tr><td>Customer segmentation, image compression</td><td>Data with many outliers (sensitive to them)</td></tr>
+</table>
+
+<div class="warning"><p>K-Means requires you to specify K upfront. Choosing the wrong K gives bad results. Always use the Elbow Method (plot inertia vs K) or Silhouette Score to find the right value.</p></div>
+
+<h2>Key Parameters</h2>
+<ul>
+<li><strong>n_clusters</strong> &mdash; Number of clusters (K)</li>
+<li><strong>init</strong> &mdash; Centroid initialization method. Use 'k-means++' (default) for smarter starting positions</li>
+<li><strong>max_iter</strong> &mdash; Maximum iterations before stopping (default 300)</li>
+<li><strong>random_state</strong> &mdash; Seed for reproducibility</li>
+</ul>
+
+<p><span class="tag">Unsupervised</span> <span class="tag">Clustering</span> <span class="tag">Centroid-based</span> <span class="tag">sklearn</span></p>
+
+</div>
+</body>
+</html>

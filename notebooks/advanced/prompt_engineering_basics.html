@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Prompt Engineering Basics - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">Prompt Engineering</span>
+
+<a href="https://github.com/Jacobgokul/ML-Playground/blob/main/advanced_topics/prompt_engineering_basics.ipynb" target="_blank" style="color:#94a3b8;text-decoration:none;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;margin-left:auto;transition:.15s" onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#94a3b8'"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> View Notebook</a>
+</div>
+<div class="container">
+
+<h1>Prompt Engineering Basics</h1>
+<p class="subtitle">The practice of designing effective prompts to communicate with LLMs -- from zero-shot to advanced techniques like Tree of Thoughts and ReAct.</p>
+
+<h2>What is Prompt Engineering?</h2>
+<p>Prompt engineering is the practice of designing and refining inputs (prompts) to get accurate, relevant, and useful outputs from large language models (LLMs) like ChatGPT, Claude, or Gemini.</p>
+
+<div class="highlight"><p>LLMs are sensitive to wording, structure, and context. A poorly crafted prompt leads to vague, irrelevant, or verbose answers. Good prompts produce consistent, reliable results.</p></div>
+
+<h2>How to Write a Good Prompt</h2>
+<div class="card">
+<div class="card-title">Prompt Design Checklist</div>
+<ol>
+<li><strong>Define the Role</strong> -- Tell the model who it is or how to behave</li>
+<li><strong>State the Goal Clearly</strong> -- Specify exactly what you want done</li>
+<li><strong>Provide Context/Constraints</strong> -- Give necessary details, limits, preferences</li>
+<li><strong>Specify Output Format</strong> -- Table, JSON, bullet points, etc.</li>
+<li><strong>Control Style/Tone</strong> -- Formal, casual, technical, creative</li>
+<li><strong>Test and Refine</strong> -- Run the prompt, check outputs, tweak</li>
+<li><strong>Keep it Clear and Concise</strong> -- Avoid ambiguity</li>
+</ol>
+</div>
+
+<div class="code">prompt = [
+    {
+        "role": "system",
+        "content": "You are a helpful assistant."
+    },
+    {
+        "role": "user",
+        "content": "Who won the world series in 2020?"
+    }
+]</div>
+
+<h2>Basic Prompting Techniques</h2>
+
+<h3>Zero-Shot Prompting</h3>
+<p>Ask the AI to perform a task with only instructions -- no examples. The model relies on its pre-trained knowledge.</p>
+
+<div class="code">prompt = [
+    {
+        "role": "system",
+        "content": "Goal: You are a trip planner. "
+                   "Your job is to help users plan trips and create itineraries. "
+                   "Ask the user if they already have a destination in mind. "
+                   "Create the trip plan based on their preferences, duration, and budget."
+    }
+]</div>
+
+<h3>One-Shot Prompting</h3>
+<p>Provide one example of the task before asking. The example shows the pattern, formatting, style, or tone you expect.</p>
+
+<div class="code">prompt = [
+    {
+        "role": "system",
+        "content": '{"goal": "You are a fitness coach chatbot.", '
+                   '"examples": [{"user_query": "Create a 3-day workout plan", '
+                   '"AI_answer": "Day 1: 20 min cardio... Day 2: Rest... Day 3: Strength training"}], '
+                   '"output_format": {"question": "", "Answer": ""}}'
+    }
+]</div>
+
+<h3>Few-Shot Prompting</h3>
+<p>Provide 2-5 examples. Helps the model learn patterns when instructions alone are not enough.</p>
+
+<div class="code">prompt = [
+    {
+        "role": "system",
+        "content": '{"goal": "You are a programming chatbot.", '
+                   '"examples": ['
+                   '{"user_query": "what is python", '
+                   '"AI_answer": "Python is a high-level programming language."}, '
+                   '{"user_query": "explain about IPL", '
+                   '"AI_answer": "I am a Programming chatbot"}], '
+                   '"output_format": {"question": "", "Answer": ""}}'
+    }
+]</div>
+
+<h3>Chain-of-Thought (CoT) Prompting</h3>
+<p>Instruct the model to think step-by-step before giving the final answer. This improves accuracy on math, logic, and multi-step reasoning tasks.</p>
+
+<div class="formula">Without CoT:  Q: 3 apples + 2 more?  A: 5
+
+With CoT:     Q: 3 apples + 2 more? Show reasoning.
+              A: Step 1: Start with 3.
+                 Step 2: Buy 2 more.
+                 Step 3: Total = 3 + 2 = 5
+                 Answer: 5</div>
+
+<div class="code">prompt = [
+    {
+        "role": "system",
+        "content": "Goal: You are a helpful assistant. "
+                   "Always solve problems by explaining your reasoning step by step. "
+                   "Example: Q: 2 pencils + 3 more? "
+                   "A: Step 1: Start with 2. Step 2: Buy 3. Step 3: Total = 5. Answer: 5"
+    },
+    {
+        "role": "user",
+        "content": "A bookstore sold 15 books on Monday and 20 on Tuesday. "
+                   "How many total? Explain."
+    }
+]</div>
+
+<h2>Advanced Prompting Techniques</h2>
+
+<h3>Self-Consistency</h3>
+<p>Ask the same question multiple times (with temperature > 0), collect all answers, and pick the most common one. Like asking 5 friends to solve a math problem and trusting the majority.</p>
+
+<div class="code">import openai
+from collections import Counter
+
+def self_consistency(question, num_attempts=5):
+    # Ask the same question multiple times and return the most common answer
+    all_answers = []
+
+    for i in range(num_attempts):
+        response = openai.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "user", "content": question + " Think step by step."}
+            ],
+            temperature=0.7  # Add randomness for different reasoning paths
+        )
+
+        answer = response.choices[0].message.content
+        final_answer = extract_final_answer(answer)
+        all_answers.append(final_answer)
+        print(f"Attempt {i+1}: {final_answer}")
+
+    # Count votes and return majority
+    vote_counts = Counter(all_answers)
+    winner = vote_counts.most_common(1)[0][0]
+    print(f"Winner (majority): {winner}")
+    return winner
+
+
+def extract_final_answer(response_text):
+    # Extract the last number from the response
+    import re
+    numbers = re.findall(r'\d+', response_text)
+    return numbers[-1] if numbers else response_text
+
+
+question = "A store has 23 apples. 17 are sold. How many are left?"
+result = self_consistency(question, num_attempts=5)</div>
+
+<table>
+<tr><th>Good For</th><th>Not Good For</th></tr>
+<tr><td>Math problems, logic puzzles</td><td>Creative writing, essays</td></tr>
+<tr><td>Factual questions, code debugging</td><td>Open-ended or subjective questions</td></tr>
+</table>
+
+<h3>Tree of Thoughts (ToT)</h3>
+<p>The AI explores multiple reasoning paths like branches of a tree, evaluates which are promising, and backtracks if a path leads to a dead end. Unlike CoT (single linear path), ToT explores in parallel.</p>
+
+<div class="formula">CoT:  Pick one path and follow it. Wrong step = stuck.
+ToT:  Explore multiple paths. Evaluate. Backtrack if needed.
+
+Result: GPT-4 solved only 4% of "Game of 24" with CoT, but 74% with ToT.</div>
+
+<div class="card">
+<div class="card-title">ToT Step-by-Step</div>
+<ol>
+<li><strong>Generate</strong> multiple initial thoughts (branches)</li>
+<li><strong>Evaluate</strong> each thought -- is it promising?</li>
+<li><strong>Expand</strong> promising paths, prune bad ones</li>
+<li><strong>Backtrack</strong> if a path fails, try alternatives</li>
+<li><strong>Select</strong> the path that reaches the correct answer</li>
+</ol>
+</div>
+
+<h3>ReAct (Reasoning + Acting)</h3>
+<p>The AI thinks out loud (Reasoning) and uses external tools (Acting) to solve problems. Instead of guessing, it can search the web, do calculations, or look up information.</p>
+
+<div class="formula">Thought --> Action --> Observation --> Thought --> ...
+
+"I need to find X"  -->  search[query]  -->  "Result: ..."  -->  "Now I know..."</div>
+
+<table>
+<tr><th>Tool</th><th>What It Does</th><th>Example</th></tr>
+<tr><td>search[query]</td><td>Search the web</td><td>search[capital of Japan]</td></tr>
+<tr><td>lookup[term]</td><td>Look up in current page</td><td>lookup[population]</td></tr>
+<tr><td>calculate[expr]</td><td>Do math</td><td>calculate[15 * 24 + 7]</td></tr>
+<tr><td>finish[answer]</td><td>Return final answer</td><td>finish[Tokyo]</td></tr>
+</table>
+
+<div class="code">react_prompt = (
+    "You are an assistant that solves problems by thinking step-by-step "
+    "and using tools.\n\n"
+    "Available Tools:\n"
+    "- search[query]: Search the internet for information\n"
+    "- calculate[expression]: Calculate a math expression\n"
+    "- finish[answer]: Return the final answer\n\n"
+    "Format:\n"
+    "Thought: [your reasoning]\n"
+    "Action: [tool_name][input]\n\n"
+    "After each Action, you receive an Observation with the result.\n"
+    "Then continue with another Thought."
+)</div>
+
+<h3>Reflexion</h3>
+<p>The AI tries something, checks if it worked, reflects on what went wrong, and tries again. A self-improvement loop with three components:</p>
+
+<div class="grid">
+<div class="grid-item">
+<h4>Actor (Generate)</h4>
+<p>Creates the initial solution (code, answer, etc.)</p>
+</div>
+<div class="grid-item">
+<h4>Evaluator (Score)</h4>
+<p>Tests if the solution is correct (pass/fail)</p>
+</div>
+<div class="grid-item">
+<h4>Self-Reflection (Analyze)</h4>
+<p>Figures out what went wrong and how to fix it</p>
+</div>
+</div>
+
+<div class="formula">Attempt 1: Actor generates is_prime(n)
+           Evaluator: is_prime(1) = True  (WRONG -- 1 is not prime)
+           Reflection: "Missing edge case for n &lt;= 1"
+
+Attempt 2: Actor adds "if n &lt;= 1: return False"
+           Evaluator: 5/5 tests pass (SUCCESS)</div>
+
+<h2>Practical Prompt Patterns</h2>
+
+<h3>Delimiters</h3>
+<p>Use special characters (###, ---, &lt;tag&gt;) to separate different parts of your prompt. Prevents confusion between instructions and content.</p>
+
+<h3>Negative Prompting</h3>
+<p>Tell the model what NOT to do. Sometimes easier than describing all wanted behavior.</p>
+
+<div class="code">prompt = {
+    "role": "system",
+    "content": "You are a customer support bot. "
+               "DO NOT: discuss competitors, make promises about future features, "
+               "share internal info, provide legal/financial advice, use slang."
+}</div>
+
+<h3>Output Format Constraints</h3>
+<p>Force the model to respond in a specific format (JSON, table, structured list).</p>
+
+<div class="code">prompt = (
+    "Extract information from this text and return as JSON only.\n\n"
+    'Text: "John Smith, age 32, software engineer at Google in San Francisco."\n\n'
+    "Output format:\n"
+    '{"name": "", "age": 0, "job": "", "company": "", "location": ""}\n\n'
+    "Return ONLY valid JSON, no explanations."
+)</div>
+
+<h3>Role-Based Prompting</h3>
+<p>Give the model a specific persona to change its tone, expertise level, and approach.</p>
+
+<div class="code"># As a teacher
+prompt_teacher = {
+    "role": "system",
+    "content": "You are a patient elementary school teacher. "
+               "Explain concepts simply using examples a 10-year-old would understand."
+}
+
+# As an expert
+prompt_expert = {
+    "role": "system",
+    "content": "You are a senior ML researcher with 20 years of experience. "
+               "Provide technically precise answers with paper references."
+}
+
+# As a critic
+prompt_critic = {
+    "role": "system",
+    "content": "You are a harsh code reviewer. "
+               "Find every possible issue, edge case, and improvement."
+}</div>
+
+<h2>Calling LLM APIs</h2>
+
+<div class="grid">
+<div class="grid-item">
+<h4>OpenAI (GPT-4)</h4>
+<p>pip install openai. Uses chat.completions.create() with messages array.</p>
+</div>
+<div class="grid-item">
+<h4>Anthropic (Claude)</h4>
+<p>pip install anthropic. Uses messages.create() with system + messages.</p>
+</div>
+<div class="grid-item">
+<h4>Google (Gemini)</h4>
+<p>pip install google-generativeai. Uses generate_content() directly.</p>
+</div>
+</div>
+
+<h3>Key API Parameters</h3>
+<table>
+<tr><th>Parameter</th><th>What It Does</th><th>Typical Values</th></tr>
+<tr><td>temperature</td><td>Controls randomness. 0 = deterministic, 1 = creative</td><td>0.0 - 1.0</td></tr>
+<tr><td>max_tokens</td><td>Maximum response length</td><td>100 - 4000</td></tr>
+<tr><td>top_p</td><td>Nucleus sampling (alternative to temperature)</td><td>0.1 - 1.0</td></tr>
+<tr><td>frequency_penalty</td><td>Reduces repetition</td><td>0.0 - 2.0</td></tr>
+<tr><td>presence_penalty</td><td>Encourages new topics</td><td>0.0 - 2.0</td></tr>
+</table>
+
+<div class="code"># OpenAI example
+from openai import OpenAI
+
+client = OpenAI(api_key="your-api-key")
+
+response = client.chat.completions.create(
+    model="gpt-4",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "What is machine learning?"}
+    ],
+    temperature=0.7,
+    max_tokens=500
+)
+
+print(response.choices[0].message.content)</div>
+
+<div class="code"># Anthropic Claude example
+import anthropic
+
+client = anthropic.Anthropic(api_key="your-api-key")
+
+message = client.messages.create(
+    model="claude-sonnet-4-20250514",
+    max_tokens=1024,
+    system="You are a helpful coding assistant.",
+    messages=[
+        {"role": "user", "content": "Write a Python function to reverse a string."}
+    ]
+)
+
+print(message.content[0].text)</div>
+
+<h2>Token Counting</h2>
+<p>APIs charge per token. Models have context limits (8K, 32K, 128K). Roughly: 1 token ~ 4 characters or 0.75 words in English.</p>
+
+<div class="code">import tiktoken
+
+encoder = tiktoken.encoding_for_model("gpt-4")
+
+text = "Hello, how are you doing today?"
+tokens = encoder.encode(text)
+
+print(f"Text: {text}")
+print(f"Tokens: {tokens}")
+print(f"Token count: {len(tokens)}")
+# Token count: 8</div>
+
+<h2>Common Pitfalls</h2>
+
+<div class="grid">
+<div class="grid-item">
+<h4>Prompt Injection</h4>
+<p>Malicious users override system instructions. Defense: use delimiters, validate input, filter output.</p>
+</div>
+<div class="grid-item">
+<h4>Hallucinations</h4>
+<p>Model confidently generates false info. Defense: ask for sources, use RAG, lower temperature.</p>
+</div>
+<div class="grid-item">
+<h4>Context Length Limits</h4>
+<p>Long documents get truncated. Defense: chunk text, summarize first, use retrieval.</p>
+</div>
+<div class="grid-item">
+<h4>Inconsistent Outputs</h4>
+<p>Same prompt gives different results. Defense: temperature=0, seed parameter, specific instructions.</p>
+</div>
+</div>
+
+<h2>Prompt Debugging</h2>
+<div class="card">
+<div class="card-title">When Your Prompt Is Not Working</div>
+<ol>
+<li><strong>Start simple, then add complexity</strong> -- Do not write a 500-word prompt at once</li>
+<li><strong>Test with multiple inputs</strong> -- Short, long, unusual, edge cases</li>
+<li><strong>Ask the model to explain</strong> -- "What part of my prompt was unclear?"</li>
+<li><strong>Put important instructions at START and END</strong> -- Primacy/recency effect</li>
+<li><strong>Show exact format examples</strong> -- Do not just describe the format</li>
+</ol>
+</div>
+
+<h2>Techniques Summary</h2>
+<table>
+<tr><th>Technique</th><th>When to Use</th><th>Key Idea</th></tr>
+<tr><td>Zero-shot</td><td>Simple, well-known tasks</td><td>Just give instructions</td></tr>
+<tr><td>One-shot</td><td>Need format/style consistency</td><td>Show one example</td></tr>
+<tr><td>Few-shot</td><td>Complex patterns</td><td>Show 2-5 examples</td></tr>
+<tr><td>Chain-of-Thought</td><td>Math, logic, reasoning</td><td>"Think step by step"</td></tr>
+<tr><td>Self-Consistency</td><td>Need high accuracy</td><td>Multiple tries + vote</td></tr>
+<tr><td>Tree of Thoughts</td><td>Exploration needed</td><td>Branch and evaluate</td></tr>
+<tr><td>ReAct</td><td>Need external tools</td><td>Thought -> Action -> Observe</td></tr>
+<tr><td>Reflexion</td><td>Iterative improvement</td><td>Generate -> Reflect -> Improve</td></tr>
+</table>
+
+<div class="warning"><p>Good prompts work WITH the model's architecture, not against it. Modern LLMs process text through tokenization, embeddings, attention, and context layers. Clear structure and explicit instructions align with how these systems work internally.</p></div>
+
+<h2>Prompt Template</h2>
+<div class="formula">[ROLE]        You are a [specific role with expertise].
+[CONTEXT]     Background information the model needs.
+[TASK]        Specific instruction of what to do.
+[FORMAT]      How the output should be structured.
+[CONSTRAINTS] What NOT to do, length limits, style requirements.
+[EXAMPLES]    Input: X  Output: Y  (optional)
+[INPUT]       The actual user input/data to process.</div>
+
+<p><span class="tag">Prompt Engineering</span><span class="tag">Zero-Shot</span><span class="tag">Few-Shot</span><span class="tag">CoT</span><span class="tag">ReAct</span><span class="tag">ToT</span><span class="tag">Reflexion</span><span class="tag">LLM APIs</span></p>
+
+</div>
+</body>
+</html>

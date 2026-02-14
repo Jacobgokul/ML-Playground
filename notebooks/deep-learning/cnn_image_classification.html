@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CNN Image Classification - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">CNN Image Classification</span>
+
+<a href="https://github.com/Jacobgokul/ML-Playground/blob/main/deep_learning/cnn_image_classification.ipynb" target="_blank" style="color:#94a3b8;text-decoration:none;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;margin-left:auto;transition:.15s" onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#94a3b8'"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> View Notebook</a>
+</div>
+<div class="container">
+
+<h1>CNN Image Classification</h1>
+<p class="subtitle">Using Convolutional Neural Networks to classify images from the CIFAR-10 dataset (10 classes, 32x32 RGB).</p>
+
+<h2>What is a CNN?</h2>
+<p>A Convolutional Neural Network exploits the spatial structure of images by using convolutional layers to extract patterns like edges, textures, and shapes. Unlike regular neural networks that flatten images immediately, CNNs preserve and learn from the 2D spatial relationships between pixels.</p>
+
+<div class="highlight"><p>CNNs are the standard for image tasks: object recognition, medical imaging, face recognition, and satellite imagery.</p></div>
+
+<h2>CNN Architecture Components</h2>
+<div class="card">
+<div class="card-title">Layer-by-Layer Breakdown</div>
+<ol>
+<li><strong>Conv2D(32, 3x3, relu)</strong> -- 32 filters scan 3x3 patches, detect basic features (edges, curves)</li>
+<li><strong>MaxPooling2D(2x2)</strong> -- Reduces spatial size by half, keeps strongest features</li>
+<li><strong>Conv2D(64, 3x3, relu)</strong> -- 64 filters detect more complex patterns (combinations of edges)</li>
+<li><strong>MaxPooling2D(2x2)</strong> -- Further reduces dimensions</li>
+<li><strong>Conv2D(64, 3x3, relu)</strong> -- Learns even higher-level features</li>
+<li><strong>Flatten()</strong> -- Converts 3D feature maps to 1D vector for Dense layers</li>
+<li><strong>Dense(64, relu)</strong> -- Combines features for classification</li>
+<li><strong>Dense(10, softmax)</strong> -- Output probabilities for 10 classes</li>
+</ol>
+</div>
+
+<h3>Key Concepts</h3>
+<ul>
+<li><strong>Convolution</strong>: A filter slides across the image, computing dot products to detect features at every position.</li>
+<li><strong>MaxPooling</strong>: Takes the maximum value in each 2x2 block. Reduces computation and adds translation invariance.</li>
+<li><strong>Filters/Kernels</strong>: Small weight matrices (e.g., 3x3) that learn to detect specific patterns during training.</li>
+</ul>
+
+<h2>Code: Load CIFAR-10 Data</h2>
+<div class="code">import tensorflow as tf
+from tensorflow.keras import datasets, layers, models
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Load the dataset
+(x_train, y_train), (x_test, y_test) = datasets.cifar10.load_data()
+
+# Normalize pixel values to [0,1]
+x_train = x_train / 255.0
+x_test = x_test / 255.0
+
+# Class names for CIFAR-10
+class_names = ['airplane','automobile','bird','cat','deer',
+               'dog','frog','horse','ship','truck']
+
+print("Training images shape:", x_train.shape)  # (50000, 32, 32, 3)
+print("Test images shape:", x_test.shape)        # (10000, 32, 32, 3)
+
+# Visualize first 5 training images
+plt.figure(figsize=(5,2))
+for i in range(5):
+    plt.subplot(1,5,i+1)
+    plt.imshow(x_train[i])
+    plt.title(class_names[int(y_train[i])])
+    plt.axis('off')
+plt.show()</div>
+
+<h2>Code: Build CNN Model</h2>
+<div class="code"># Build CNN Model
+model = models.Sequential()
+
+# 1st Convolution + Pooling
+model.add(layers.Conv2D(32, (3,3), activation='relu', input_shape=(32,32,3)))
+model.add(layers.MaxPooling2D((2,2)))
+
+# 2nd Convolution + Pooling
+model.add(layers.Conv2D(64, (3,3), activation='relu'))
+model.add(layers.MaxPooling2D((2,2)))
+
+# 3rd Convolution
+model.add(layers.Conv2D(64, (3,3), activation='relu'))
+
+# Flatten + Dense layers
+model.add(layers.Flatten())
+model.add(layers.Dense(64, activation='relu'))
+model.add(layers.Dense(10, activation='softmax'))</div>
+
+<h2>Code: Train and Evaluate</h2>
+<div class="code"># Compile and train
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+history = model.fit(x_train, y_train, epochs=10, validation_data=(x_test, y_test))
+
+# Evaluate
+test_loss, test_acc = model.evaluate(x_test, y_test)
+print(f"Test accuracy: {test_acc:.4f}")
+
+# Visualize Predictions
+predictions = model.predict(x_test[:5])
+
+plt.figure(figsize=(6,1))
+for i in range(5):
+    plt.subplot(1,5,i+1)
+    plt.imshow(x_test[i])
+    plt.title(f"{class_names[np.argmax(predictions[i])]}")
+    plt.axis('off')
+plt.show()</div>
+
+<h2>When to Use CNNs</h2>
+<table>
+<tr><th>Good For</th><th>Not Ideal For</th></tr>
+<tr><td>Image classification</td><td>Tabular / structured data</td></tr>
+<tr><td>Object detection</td><td>Sequential / time-series data</td></tr>
+<tr><td>Medical imaging</td><td>Small datasets without augmentation</td></tr>
+<tr><td>Face recognition</td><td>Tasks where spatial structure is irrelevant</td></tr>
+</table>
+
+<div class="warning"><p>CIFAR-10 images are only 32x32 pixels. The ~72% accuracy is typical for a basic CNN on this dataset. Adding data augmentation, dropout, batch normalization, and deeper architectures (ResNet) can push accuracy above 90%.</p></div>
+
+<p><span class="tag">CNN</span><span class="tag">CIFAR-10</span><span class="tag">Conv2D</span><span class="tag">MaxPooling</span><span class="tag">Keras</span><span class="tag">Image Classification</span></p>
+
+</div>
+</body>
+</html>

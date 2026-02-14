@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Regularization Techniques - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">Regularization Techniques</span>
+</div>
+<div class="container">
+
+<h1>Regularization Techniques</h1>
+<p class="subtitle">Prevent overfitting and build models that generalize to unseen data. The art of adding the right constraints.</p>
+
+<h2>What is Overfitting?</h2>
+<p>A model overfits when it memorizes the training data (including noise) instead of learning the underlying pattern. It performs great on training data but poorly on new data. Regularization adds constraints to prevent this.</p>
+
+<div class="formula">Training accuracy: 99%  |  Test accuracy: 72%  → Overfitting!
+Training accuracy: 92%  |  Test accuracy: 89%  → Good generalization</div>
+
+<h2>Techniques Overview</h2>
+
+<h3>1. L1 Regularization (Lasso)</h3>
+<p>Adds the sum of absolute weights to the loss. Drives some weights to exactly zero → automatic feature selection.</p>
+<div class="formula">Loss = Original Loss + λ * Σ|w_i|
+
+Effect: Sparse weights. Some features get weight = 0 (removed).
+Use when: You suspect many features are irrelevant.</div>
+
+<h3>2. L2 Regularization (Ridge)</h3>
+<p>Adds the sum of squared weights to the loss. Shrinks all weights towards zero but never exactly zero.</p>
+<div class="formula">Loss = Original Loss + λ * Σ(w_i²)
+
+Effect: Smaller, more distributed weights. No feature removed entirely.
+Use when: All features might be relevant but you want to prevent large weights.</div>
+
+<h3>3. Dropout</h3>
+<p>During training, randomly set a fraction of neurons to zero in each forward pass. Forces the network to not rely on any single neuron.</p>
+<div class="code">import tensorflow as tf
+from tensorflow.keras import layers, Sequential
+
+model = Sequential([
+    layers.Dense(256, activation='relu', input_shape=(784,)),
+    layers.Dropout(0.5),       # Randomly drop 50% of neurons during training
+    layers.Dense(128, activation='relu'),
+    layers.Dropout(0.3),       # Drop 30% here
+    layers.Dense(10, activation='softmax')
+])
+
+# Dropout is ONLY active during training, not during prediction
+# model.predict() automatically disables dropout</div>
+
+<div class="highlight"><p>Dropout rate 0.5 for hidden layers and 0.2 for input layer is a good starting point. Higher dropout = stronger regularization.</p></div>
+
+<h3>4. Batch Normalization</h3>
+<p>Normalizes the output of each layer to have zero mean and unit variance. Stabilizes training, acts as mild regularization, and allows higher learning rates.</p>
+<div class="code">model = Sequential([
+    layers.Dense(256, input_shape=(784,)),
+    layers.BatchNormalization(),     # Normalize activations
+    layers.Activation('relu'),
+    layers.Dense(128),
+    layers.BatchNormalization(),
+    layers.Activation('relu'),
+    layers.Dense(10, activation='softmax')
+])
+
+# BatchNorm has learnable parameters (gamma, beta) for scaling and shifting
+# It tracks running mean/variance for inference</div>
+
+<h3>5. Early Stopping</h3>
+<p>Monitor validation loss during training. Stop when it starts increasing (the model is beginning to overfit).</p>
+<div class="code">from tensorflow.keras.callbacks import EarlyStopping
+
+early_stop = EarlyStopping(
+    monitor='val_loss',      # Watch validation loss
+    patience=5,              # Wait 5 epochs for improvement
+    restore_best_weights=True  # Go back to the best model
+)
+
+model.fit(X_train, y_train,
+          validation_split=0.2,
+          epochs=100,           # Set high, early stopping will cut it short
+          callbacks=[early_stop])
+
+# Typically stops at epoch 15-30 instead of running all 100</div>
+
+<h3>6. Data Augmentation</h3>
+<p>Artificially increase training data by applying random transformations. More data = less overfitting.</p>
+<div class="code">from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+datagen = ImageDataGenerator(
+    rotation_range=20,        # Random rotation ±20 degrees
+    width_shift_range=0.2,    # Horizontal shift ±20%
+    height_shift_range=0.2,   # Vertical shift ±20%
+    horizontal_flip=True,     # Random horizontal flip
+    zoom_range=0.2,           # Random zoom ±20%
+    shear_range=0.1           # Random shearing
+)
+
+# Use augmented data for training
+model.fit(datagen.flow(X_train, y_train, batch_size=32),
+          epochs=50, validation_data=(X_test, y_test))</div>
+
+<h3>7. Weight Decay</h3>
+<p>Same as L2 regularization but applied directly in the optimizer. Decays weights each step.</p>
+<div class="code"># In TensorFlow/Keras
+optimizer = tf.keras.optimizers.Adam(learning_rate=0.001, weight_decay=1e-4)
+
+# In PyTorch
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)</div>
+
+<h2>When to Use What</h2>
+<table>
+<tr><th>Technique</th><th>Best For</th><th>Strength</th></tr>
+<tr><td><strong>L1 (Lasso)</strong></td><td>Feature selection in linear models</td><td>Removes irrelevant features</td></tr>
+<tr><td><strong>L2 (Ridge)</strong></td><td>General purpose regularization</td><td>Prevents large weights</td></tr>
+<tr><td><strong>Dropout</strong></td><td>Deep neural networks</td><td>Prevents co-adaptation of neurons</td></tr>
+<tr><td><strong>Batch Norm</strong></td><td>Deep networks (especially CNNs)</td><td>Stabilizes + regularizes</td></tr>
+<tr><td><strong>Early Stopping</strong></td><td>Any iterative model</td><td>Simple, no hyperparameters</td></tr>
+<tr><td><strong>Data Augmentation</strong></td><td>Image classification</td><td>More data = less overfit</td></tr>
+<tr><td><strong>Weight Decay</strong></td><td>Transformers, large models</td><td>Cleaner than L2 in loss</td></tr>
+</table>
+
+<h2>Combining Techniques</h2>
+<p>In practice, you combine multiple regularization techniques:</p>
+<div class="code"># A well-regularized CNN
+model = Sequential([
+    layers.Conv2D(32, 3, input_shape=(32,32,3)),
+    layers.BatchNormalization(),
+    layers.Activation('relu'),
+    layers.MaxPooling2D(),
+    layers.Dropout(0.25),
+
+    layers.Conv2D(64, 3),
+    layers.BatchNormalization(),
+    layers.Activation('relu'),
+    layers.MaxPooling2D(),
+    layers.Dropout(0.25),
+
+    layers.Flatten(),
+    layers.Dense(128),
+    layers.BatchNormalization(),
+    layers.Activation('relu'),
+    layers.Dropout(0.5),
+    layers.Dense(10, activation='softmax')
+])
+
+# + Early Stopping + Data Augmentation during training</div>
+
+<div class="warning"><p>Too much regularization = underfitting (model is too constrained). Start with mild regularization and increase until validation performance peaks.</p></div>
+
+</div>
+</body>
+</html>

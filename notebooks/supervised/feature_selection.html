@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Feature Selection - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">Feature Selection</span>
+</div>
+<div class="container">
+
+<h1>Feature Selection</h1>
+<p class="subtitle">Pick the most important features and drop the noise. Fewer features = faster training, less overfitting, better interpretability.</p>
+
+<h2>Why Feature Selection?</h2>
+<p>Not all features contribute equally to predictions. Some are noisy, redundant, or irrelevant. Feature selection identifies and keeps only the useful ones, improving model performance and reducing complexity.</p>
+
+<div class="highlight"><p>With 100 features, your model might overfit noise. With the right 15 features, it could perform better and train 10x faster.</p></div>
+
+<h2>Three Categories</h2>
+<div class="grid">
+<div class="grid-item">
+<h4>Filter Methods</h4>
+<p>Score each feature independently using statistical tests. Fast but ignores feature interactions. Examples: correlation, chi-squared, mutual information.</p>
+</div>
+<div class="grid-item">
+<h4>Wrapper Methods</h4>
+<p>Train models with different feature subsets and pick the best. Accurate but slow. Examples: RFE, forward/backward selection.</p>
+</div>
+<div class="grid-item">
+<h4>Embedded Methods</h4>
+<p>Feature selection is built into the model training. Best of both worlds. Examples: Lasso (L1), tree-based feature importance.</p>
+</div>
+</div>
+
+<h2>Method 1: Correlation Analysis</h2>
+<div class="code">import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Remove highly correlated features (redundant)
+df = pd.DataFrame(np.random.randn(100, 5), columns=['A', 'B', 'C', 'D', 'E'])
+df['B'] = df['A'] * 0.95 + np.random.randn(100) * 0.1  # B ≈ A (highly correlated)
+
+corr_matrix = df.corr().abs()
+
+# Find pairs with correlation > 0.9
+upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k=1).astype(bool))
+to_drop = [col for col in upper.columns if any(upper[col] > 0.9)]
+print(f"Drop: {to_drop}")  # ['B'] - redundant with A</div>
+
+<h2>Method 2: SelectKBest (Filter)</h2>
+<div class="code">from sklearn.feature_selection import SelectKBest, f_classif, mutual_info_classif, chi2
+from sklearn.datasets import load_iris
+
+X, y = load_iris(return_X_y=True)
+
+# Select top 2 features using F-statistic (ANOVA)
+selector = SelectKBest(score_func=f_classif, k=2)
+X_selected = selector.fit_transform(X, y)
+
+print(f"Original: {X.shape}")    # (150, 4)
+print(f"Selected: {X_selected.shape}")  # (150, 2)
+print(f"Scores: {selector.scores_}")
+print(f"Selected features: {selector.get_support()}")  # [True, False, True, True] etc.</div>
+
+<h2>Method 3: Recursive Feature Elimination (RFE)</h2>
+<div class="code">from sklearn.feature_selection import RFE
+from sklearn.ensemble import RandomForestClassifier
+
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+
+# Select top 2 features by recursively removing the least important
+rfe = RFE(estimator=model, n_features_to_select=2, step=1)
+rfe.fit(X, y)
+
+print(f"Selected: {rfe.support_}")     # [False, False, True, True]
+print(f"Ranking:  {rfe.ranking_}")      # [3, 2, 1, 1] (1 = selected)
+print(f"Feature names: {np.array(load_iris().feature_names)[rfe.support_]}")</div>
+
+<h2>Method 4: Tree-Based Importance (Embedded)</h2>
+<div class="code">from sklearn.ensemble import RandomForestClassifier
+import matplotlib.pyplot as plt
+
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X, y)
+
+importances = model.feature_importances_
+feature_names = load_iris().feature_names
+
+# Sort by importance
+idx = np.argsort(importances)[::-1]
+for i in idx:
+    print(f"  {feature_names[i]:20s}: {importances[i]:.4f}")
+
+# Threshold-based selection
+from sklearn.feature_selection import SelectFromModel
+selector = SelectFromModel(model, threshold="mean")  # Keep above-average importance
+X_selected = selector.fit_transform(X, y)
+print(f"Selected {X_selected.shape[1]} features out of {X.shape[1]}")</div>
+
+<h2>Method 5: L1 Regularization (Lasso)</h2>
+<div class="code">from sklearn.linear_model import LassoCV
+from sklearn.preprocessing import StandardScaler
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Lasso drives unimportant feature weights to exactly 0
+lasso = LassoCV(cv=5).fit(X_scaled, y)
+print(f"Coefficients: {lasso.coef_}")
+# Non-zero coefficients = selected features
+selected = np.where(lasso.coef_ != 0)[0]
+print(f"Selected feature indices: {selected}")</div>
+
+<h2>Comparison</h2>
+<table>
+<tr><th>Method</th><th>Speed</th><th>Considers Interactions</th><th>Best For</th></tr>
+<tr><td>Correlation</td><td>Very Fast</td><td>Pairwise only</td><td>Removing redundant features</td></tr>
+<tr><td>SelectKBest</td><td>Fast</td><td>No</td><td>Quick baseline, high-dimensional data</td></tr>
+<tr><td>RFE</td><td>Slow</td><td>Yes</td><td>When accuracy matters more than speed</td></tr>
+<tr><td>Tree Importance</td><td>Medium</td><td>Yes</td><td>General purpose, interpretable</td></tr>
+<tr><td>Lasso (L1)</td><td>Medium</td><td>Partially</td><td>Linear models, automatic selection</td></tr>
+</table>
+
+<div class="warning"><p>Always do feature selection inside cross-validation, not before. Otherwise you leak information from the test set into the selection process.</p></div>
+
+</div>
+</body>
+</html>

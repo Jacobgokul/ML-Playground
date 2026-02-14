@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Recommendation Systems - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">Recommendation Systems</span>
+</div>
+<div class="container">
+
+<h1>Recommendation Systems</h1>
+<p class="subtitle">Build personalized suggestions like Netflix, Amazon, and Spotify. Match users with items they'll love.</p>
+
+<h2>Types of Recommendation Systems</h2>
+<div class="grid">
+<div class="grid-item">
+<h4>Collaborative Filtering</h4>
+<p>"Users who liked what you liked also liked this." Based on user-item interactions. No item features needed.</p>
+</div>
+<div class="grid-item">
+<h4>Content-Based Filtering</h4>
+<p>"Because you liked Action movies, here's another Action movie." Based on item features (genre, description, etc).</p>
+</div>
+<div class="grid-item">
+<h4>Hybrid</h4>
+<p>Combines both approaches. Netflix uses collaborative + content-based + deep learning for best results.</p>
+</div>
+</div>
+
+<h2>Collaborative Filtering</h2>
+
+<h3>User-User Collaborative Filtering</h3>
+<p>Find users similar to you, then recommend what they liked but you haven't seen yet.</p>
+<div class="formula">User-Item Rating Matrix:
+            Movie1  Movie2  Movie3  Movie4
+  Alice       5       3       4       ?     ← What will Alice rate Movie4?
+  Bob         3       1       2       3
+  Carol       4       3       4       5     ← Carol is similar to Alice
+  Dave        3       3       1       1
+
+Alice ≈ Carol (similar ratings) → Recommend Movie4 to Alice (Carol gave it 5)</div>
+
+<h3>Item-Item Collaborative Filtering</h3>
+<p>Find items similar to what the user already liked. More stable than user-user (items don't change, users do).</p>
+
+<h2>Code: Collaborative Filtering</h2>
+<div class="code">import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
+# User-Item rating matrix (0 = not rated)
+ratings = np.array([
+    [5, 3, 4, 0, 0],  # Alice
+    [3, 1, 2, 3, 3],  # Bob
+    [4, 3, 4, 5, 0],  # Carol
+    [3, 3, 1, 1, 5],  # Dave
+    [1, 5, 5, 2, 1],  # Eve
+])
+users = ['Alice', 'Bob', 'Carol', 'Dave', 'Eve']
+items = ['Movie1', 'Movie2', 'Movie3', 'Movie4', 'Movie5']
+
+# --- User-User Similarity ---
+user_sim = cosine_similarity(ratings)
+print("User Similarity Matrix:")
+for i, u in enumerate(users):
+    print(f"  {u}: {np.round(user_sim[i], 2)}")
+
+# Predict Alice's rating for Movie4 (index [0][3])
+alice_idx = 0
+movie_idx = 3
+
+# Find users who rated Movie4
+rated_mask = ratings[:, movie_idx] > 0
+similarities = user_sim[alice_idx][rated_mask]
+their_ratings = ratings[rated_mask, movie_idx]
+
+# Weighted average
+predicted = np.dot(similarities, their_ratings) / similarities.sum()
+print(f"\nPredicted rating for Alice on Movie4: {predicted:.2f}")
+
+# --- Item-Item Similarity ---
+item_sim = cosine_similarity(ratings.T)
+print("\nItem Similarity (Movie1 vs others):", np.round(item_sim[0], 2))</div>
+
+<h2>Content-Based Filtering</h2>
+<div class="code">from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Item features (descriptions)
+movies = {
+    'The Matrix': 'sci-fi action computer hacker virtual reality',
+    'John Wick': 'action thriller assassin revenge guns',
+    'Inception': 'sci-fi thriller dreams mind bending',
+    'The Notebook': 'romance drama love story emotional',
+    'Interstellar': 'sci-fi space adventure time gravity',
+    'Titanic': 'romance drama love ship historical',
+}
+
+# Convert descriptions to TF-IDF vectors
+tfidf = TfidfVectorizer()
+tfidf_matrix = tfidf.fit_transform(movies.values())
+
+# Compute similarity between all movies
+sim_matrix = cosine_similarity(tfidf_matrix)
+
+# Recommend similar to "The Matrix"
+movie_names = list(movies.keys())
+idx = movie_names.index('The Matrix')
+scores = list(enumerate(sim_matrix[idx]))
+scores = sorted(scores, key=lambda x: x[1], reverse=True)
+
+print("If you liked 'The Matrix', try:")
+for i, score in scores[1:4]:
+    print(f"  {movie_names[i]:20s} (similarity: {score:.3f})")</div>
+
+<h2>Matrix Factorization (Advanced)</h2>
+<p>Decompose the sparse user-item matrix into two lower-dimensional matrices. Discovers latent factors (hidden features like "genre preference" or "movie quality").</p>
+<div class="formula">R ≈ U × V^T
+
+R = User-Item matrix      (m users × n items)
+U = User factors matrix    (m users × k latent factors)
+V = Item factors matrix    (n items × k latent factors)
+
+Example: k=3 latent factors might represent:
+  Factor 1: Action vs Romance preference
+  Factor 2: Old vs New movie preference
+  Factor 3: Blockbuster vs Indie preference</div>
+
+<h2>Evaluation Metrics</h2>
+<table>
+<tr><th>Metric</th><th>What It Measures</th></tr>
+<tr><td><strong>RMSE</strong></td><td>How close predicted ratings are to actual ratings</td></tr>
+<tr><td><strong>Precision@K</strong></td><td>Of top-K recommendations, how many were relevant</td></tr>
+<tr><td><strong>Recall@K</strong></td><td>Of all relevant items, how many were in top-K</td></tr>
+<tr><td><strong>MAP</strong></td><td>Average precision across all users</td></tr>
+<tr><td><strong>NDCG</strong></td><td>Considers the ranking order (better items ranked higher)</td></tr>
+</table>
+
+<h2>Cold Start Problem</h2>
+<p>The biggest challenge: how to recommend for new users (no history) or new items (no ratings)?</p>
+<ul>
+<li><strong>New user</strong> → Ask preferences during onboarding, use popularity-based recs</li>
+<li><strong>New item</strong> → Use content-based features until enough ratings accumulate</li>
+<li><strong>Hybrid approach</strong> → Combine collaborative + content-based to handle both</li>
+</ul>
+
+<div class="warning"><p>Collaborative filtering needs enough user-item interactions to work. With very sparse data (&lt;1% filled), consider content-based or hybrid methods.</p></div>
+
+</div>
+</body>
+</html>

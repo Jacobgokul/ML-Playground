@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Deep Learning Overview - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">Deep Learning Overview</span>
+
+<a href="https://github.com/Jacobgokul/ML-Playground/blob/main/deep_learning/deep_learning_overview.ipynb" target="_blank" style="color:#94a3b8;text-decoration:none;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;margin-left:auto;transition:.15s" onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#94a3b8'"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> View Notebook</a>
+</div>
+<div class="container">
+
+<h1>Deep Learning Overview</h1>
+<p class="subtitle">A subfield of machine learning that uses multi-layer neural networks to learn complex patterns from raw data.</p>
+
+<h2>What is Deep Learning?</h2>
+<p>Deep Learning uses artificial neural networks with multiple layers (hence "deep") to learn complex patterns from data. Unlike classical ML, deep learning automatically learns features from raw data -- pixels, text, or audio -- without manual feature engineering.</p>
+
+<div class="highlight"><p>Core idea: just like the human brain processes signals through layers of neurons, deep learning models learn using layers of artificial neurons.</p></div>
+
+<h2>Neural Network Structure</h2>
+<div class="formula">Input Layer  -->  Hidden Layers  -->  Output Layer
+
+Each layer has:
+  Neurons (nodes)         - mini math units
+  Weights                 - control importance of inputs
+  Biases                  - offset added to weighted input
+  Activation Function     - introduces non-linearity</div>
+
+<h2>Deep Learning Algorithm Map</h2>
+<table>
+<tr><th>Algorithm</th><th>Full Form</th><th>Used For</th><th>Key Idea</th></tr>
+<tr><td>ANN</td><td>Artificial Neural Network</td><td>Tabular data, basic problems</td><td>Input -> hidden -> output layers</td></tr>
+<tr><td>DNN</td><td>Deep Neural Network</td><td>Any complex task</td><td>ANN with many hidden layers</td></tr>
+<tr><td>MLP</td><td>Multilayer Perceptron</td><td>Classification &amp; regression</td><td>Fully connected layers, no memory</td></tr>
+<tr><td>CNN</td><td>Convolutional Neural Network</td><td>Image &amp; video</td><td>Filters/kernels detect spatial patterns</td></tr>
+<tr><td>RNN</td><td>Recurrent Neural Network</td><td>Time-series &amp; sequences</td><td>Has memory; passes info through time</td></tr>
+<tr><td>LSTM</td><td>Long Short-Term Memory</td><td>Long sequences</td><td>Improved RNN with memory gates</td></tr>
+<tr><td>Transformers</td><td>--</td><td>NLP, vision, LLMs</td><td>Self-attention; parallel processing</td></tr>
+<tr><td>GANs</td><td>Generative Adversarial Networks</td><td>Image generation</td><td>Generator vs Discriminator</td></tr>
+</table>
+
+<h2>Activation Functions</h2>
+<p>After computing the weighted sum in a neuron, the activation function decides whether the neuron should "fire". Without it, the network is just a linear function.</p>
+
+<div class="formula">z = (input1 * weight1) + (input2 * weight2) + bias
+a = activation_function(z)</div>
+
+<div class="grid">
+<div class="grid-item">
+<h4>Sigmoid</h4>
+<p>Output: 0 to 1. Used for binary classification output layer. Limitation: vanishing gradient in deep networks.</p>
+</div>
+<div class="grid-item">
+<h4>ReLU</h4>
+<p>f(x) = max(0, x). Default for hidden layers. Fast and simple. Limitation: dead neurons if input is always negative.</p>
+</div>
+<div class="grid-item">
+<h4>Leaky ReLU</h4>
+<p>Allows small negative output to fix dead neuron problem. f(x) = x if x > 0, else 0.01x.</p>
+</div>
+<div class="grid-item">
+<h4>Softmax</h4>
+<p>Converts outputs to probabilities summing to 1. Used for multi-class classification output layer.</p>
+</div>
+</div>
+
+<div class="code">import numpy as np
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def relu(x):
+    return np.maximum(0, x)
+
+def leaky_relu(x, alpha=0.01):
+    return np.where(x > 0, x, alpha * x)</div>
+
+<h2>Loss Functions</h2>
+<p>A loss function measures how far the model's prediction is from the actual value. Smaller loss means better performance. The optimizer uses the loss to adjust weights via backpropagation.</p>
+
+<div class="grid">
+<div class="grid-item">
+<h4>Regression</h4>
+<p>MSE (Mean Squared Error) and MAE (Mean Absolute Error).</p>
+</div>
+<div class="grid-item">
+<h4>Classification</h4>
+<p>Binary Cross-Entropy (2 classes) and Categorical Cross-Entropy (multi-class).</p>
+</div>
+</div>
+
+<h2>Optimizers</h2>
+<p>An optimizer updates weights to minimize the loss function. It uses gradients computed via backpropagation.</p>
+
+<div class="formula">W_new = W_old - learning_rate * gradient</div>
+
+<table>
+<tr><th>Optimizer</th><th>How It Works</th><th>When to Use</th></tr>
+<tr><td>Gradient Descent</td><td>Updates after full dataset pass</td><td>Small datasets</td></tr>
+<tr><td>SGD</td><td>Updates after each sample</td><td>Large datasets, noisy but fast</td></tr>
+<tr><td>Mini-Batch GD</td><td>Updates after a batch (e.g., 32)</td><td>Most common in practice</td></tr>
+<tr><td>AdaGrad</td><td>Adapts learning rate per parameter</td><td>Sparse data (text)</td></tr>
+<tr><td>RMSProp</td><td>Fixes AdaGrad's shrinking LR</td><td>RNNs, non-stationary problems</td></tr>
+<tr><td><strong>Adam</strong></td><td>Momentum + RMSProp combined</td><td>Default choice for most tasks</td></tr>
+</table>
+
+<div class="highlight"><p>Adam (Adaptive Moment Estimation) is the most widely used optimizer. It combines the benefits of momentum and adaptive learning rates. Use it as your default.</p></div>
+
+<h2>Epochs, Batch Size, Learning Rate</h2>
+
+<div class="card">
+<div class="card-title">Training Hyperparameters</div>
+<ul>
+<li><strong>Epoch</strong> -- One complete pass through the entire dataset. Training for 10 epochs = model sees each sample 10 times.</li>
+<li><strong>Batch Size</strong> -- Number of samples processed before updating weights. Too large = high memory; too small = noisy updates. Common: 32, 64, 128.</li>
+<li><strong>Learning Rate</strong> -- Step size for weight updates. Too high = overshoots; too low = extremely slow training. Typical starting value: 0.001.</li>
+</ul>
+</div>
+
+<div class="warning"><p>Learning rate is the single most important hyperparameter. Start with 0.001 (Adam default). If training loss oscillates, reduce it. If training is too slow, increase it.</p></div>
+
+<h2>When to Use Deep Learning</h2>
+<table>
+<tr><th>Good For</th><th>Not Ideal For</th></tr>
+<tr><td>Images, video, audio, text</td><td>Small tabular datasets</td></tr>
+<tr><td>Large datasets (thousands+ samples)</td><td>When interpretability is critical</td></tr>
+<tr><td>Complex non-linear relationships</td><td>Low-compute environments</td></tr>
+<tr><td>End-to-end feature learning</td><td>When classical ML works well enough</td></tr>
+</table>
+
+<p><span class="tag">ANN</span><span class="tag">CNN</span><span class="tag">RNN</span><span class="tag">LSTM</span><span class="tag">Transformers</span><span class="tag">Adam</span><span class="tag">Backpropagation</span><span class="tag">ReLU</span></p>
+
+</div>
+</body>
+</html>

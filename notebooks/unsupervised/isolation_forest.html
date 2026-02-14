@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Isolation Forest - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">Isolation Forest</span>
+</div>
+<div class="container">
+
+<h1>Isolation Forest</h1>
+<p class="subtitle">Detect anomalies by isolating outliers with random partitioning. Anomalies are "few and different" — they're easier to isolate.</p>
+
+<h2>Core Idea</h2>
+<p>Normal points are clustered together and need many splits to isolate. Anomalies are far from the cluster and can be isolated with very few splits. Isolation Forest builds random trees and measures how quickly each point gets isolated — shorter paths = more anomalous.</p>
+
+<div class="highlight"><p>Traditional methods model what's "normal" and flag what doesn't fit. Isolation Forest does the opposite — it directly finds what's easy to isolate, which is much more efficient.</p></div>
+
+<h2>How It Works</h2>
+<div class="card">
+<div class="card-title">Algorithm Steps</div>
+<ol>
+<li><strong>Build trees</strong>: For each tree, randomly select a feature and a random split value within the feature's range</li>
+<li><strong>Split recursively</strong> until each point is isolated (alone in its partition) or max depth is reached</li>
+<li><strong>Measure path length</strong>: Count how many splits it took to isolate each point</li>
+<li><strong>Average across trees</strong>: Points with short average path lengths are anomalies</li>
+<li><strong>Compute anomaly score</strong>: Normalize path lengths to a score between 0 and 1</li>
+</ol>
+</div>
+
+<div class="formula">Anomaly Score:
+  s(x, n) = 2^(-E(h(x)) / c(n))
+
+Where:
+  h(x)  = path length of point x (average across trees)
+  c(n)  = average path length in a binary tree with n samples
+  E(·)  = expected value (mean across all trees)
+
+Score ≈ 1   → Anomaly (short path, easy to isolate)
+Score ≈ 0.5 → Normal (average path length)
+Score ≈ 0   → Very normal (deep in the cluster)</div>
+
+<h2>Code Implementation</h2>
+<div class="code">import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.ensemble import IsolationForest
+
+# Generate data: normal cluster + outliers
+np.random.seed(42)
+X_normal = np.random.randn(300, 2)  # Normal data
+X_outliers = np.random.uniform(-4, 4, size=(20, 2))  # Outliers
+X = np.vstack([X_normal, X_outliers])
+
+# Train Isolation Forest
+model = IsolationForest(
+    n_estimators=100,       # Number of trees
+    contamination=0.06,     # Expected fraction of outliers (~20/320)
+    random_state=42
+)
+predictions = model.fit_predict(X)  # 1 = normal, -1 = anomaly
+scores = model.decision_function(X)  # Lower = more anomalous
+
+# Results
+n_anomalies = (predictions == -1).sum()
+print(f"Detected {n_anomalies} anomalies out of {len(X)} points")
+
+# Visualize
+plt.figure(figsize=(10, 6))
+plt.scatter(X[predictions == 1, 0], X[predictions == 1, 1],
+            c='blue', s=20, label='Normal')
+plt.scatter(X[predictions == -1, 0], X[predictions == -1, 1],
+            c='red', s=50, marker='x', label='Anomaly')
+plt.legend()
+plt.title("Isolation Forest Anomaly Detection")
+plt.show()</div>
+
+<h2>Key Parameters</h2>
+<table>
+<tr><th>Parameter</th><th>Default</th><th>Description</th></tr>
+<tr><td><strong>n_estimators</strong></td><td>100</td><td>Number of trees. More = more stable results</td></tr>
+<tr><td><strong>contamination</strong></td><td>'auto'</td><td>Expected proportion of outliers (0 to 0.5). Affects the threshold</td></tr>
+<tr><td><strong>max_samples</strong></td><td>'auto' (256)</td><td>Samples per tree. Smaller = faster, more randomness</td></tr>
+<tr><td><strong>max_features</strong></td><td>1.0</td><td>Features per tree. Less = more diversity between trees</td></tr>
+</table>
+
+<h2>Real-World Applications</h2>
+<ul>
+<li><strong>Fraud detection</strong> — Flag unusual credit card transactions</li>
+<li><strong>Network intrusion</strong> — Detect unusual network traffic patterns</li>
+<li><strong>Manufacturing</strong> — Identify defective products on assembly lines</li>
+<li><strong>Healthcare</strong> — Flag abnormal patient readings</li>
+<li><strong>Log analysis</strong> — Find unusual system events or errors</li>
+</ul>
+
+<h2>Isolation Forest vs Other Methods</h2>
+<table>
+<tr><th>Method</th><th>Approach</th><th>Scalability</th></tr>
+<tr><td><strong>Isolation Forest</strong></td><td>Isolation-based (how easy to separate)</td><td>Excellent (linear time)</td></tr>
+<tr><td><strong>One-Class SVM</strong></td><td>Find boundary around normal data</td><td>Poor (quadratic)</td></tr>
+<tr><td><strong>LOF</strong></td><td>Local density comparison</td><td>Moderate</td></tr>
+<tr><td><strong>DBSCAN</strong></td><td>Density-based clustering</td><td>Good</td></tr>
+<tr><td><strong>Autoencoder</strong></td><td>Reconstruction error</td><td>Good (needs GPU)</td></tr>
+</table>
+
+<div class="warning"><p>Isolation Forest works best with low-dimensional data (< 20 features) and a clear distinction between normal and anomalous. For high-dimensional data, consider using PCA first.</p></div>
+
+</div>
+</body>
+</html>

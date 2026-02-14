@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Autoencoders - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">Autoencoders</span>
+</div>
+<div class="container">
+
+<h1>Autoencoders</h1>
+<p class="subtitle">Neural networks that learn compressed representations by encoding input to a bottleneck and decoding it back.</p>
+
+<h2>What is an Autoencoder?</h2>
+<p>An autoencoder is an unsupervised neural network that learns to compress (encode) data into a lower-dimensional representation and then reconstruct (decode) it back. The network is trained to minimize the difference between input and output, forcing the bottleneck layer to learn the most important features.</p>
+
+<div class="highlight"><p>The key insight: by squeezing data through a bottleneck, the network must learn which features matter most — it can't memorize everything.</p></div>
+
+<h2>Architecture</h2>
+<div class="formula">Input → [Encoder] → Bottleneck (Latent Space) → [Decoder] → Output (Reconstruction)
+
+Example for MNIST (28×28 = 784 pixels):
+  Encoder: 784 → 256 → 128 → 32 (latent)
+  Decoder: 32 → 128 → 256 → 784</div>
+
+<h2>How It Works</h2>
+<div class="card">
+<div class="card-title">Training Process</div>
+<ol>
+<li><strong>Encoder</strong> compresses input x into latent representation z = f(x)</li>
+<li><strong>Bottleneck</strong> (latent space) holds the compressed representation</li>
+<li><strong>Decoder</strong> reconstructs the input: x' = g(z)</li>
+<li><strong>Loss</strong> = difference between x and x' (reconstruction error)</li>
+<li>Backpropagate and update weights to minimize reconstruction error</li>
+</ol>
+</div>
+
+<h2>Loss Function</h2>
+<div class="formula">Reconstruction Loss (MSE):
+  L = (1/n) * Σ (x_i - x'_i)²
+
+Or Binary Cross-Entropy (for normalized inputs):
+  L = -Σ [x_i * log(x'_i) + (1 - x_i) * log(1 - x'_i)]</div>
+
+<h2>Types of Autoencoders</h2>
+<div class="grid">
+<div class="grid-item">
+<h4>Vanilla Autoencoder</h4>
+<p>Simple encoder-decoder with fully connected layers. Basic dimensionality reduction and feature learning.</p>
+</div>
+<div class="grid-item">
+<h4>Denoising Autoencoder</h4>
+<p>Input is corrupted with noise; network learns to reconstruct the clean version. Learns more robust features.</p>
+</div>
+<div class="grid-item">
+<h4>Variational (VAE)</h4>
+<p>Encoder outputs a probability distribution (mean + variance) instead of a fixed vector. Can generate new data by sampling.</p>
+</div>
+<div class="grid-item">
+<h4>Convolutional Autoencoder</h4>
+<p>Uses Conv2D for encoding and Conv2DTranspose for decoding. Better for image data.</p>
+</div>
+<div class="grid-item">
+<h4>Sparse Autoencoder</h4>
+<p>Adds sparsity constraint to bottleneck. Most neurons are inactive, forcing useful feature extraction.</p>
+</div>
+<div class="grid-item">
+<h4>Contractive Autoencoder</h4>
+<p>Adds penalty on the derivatives of the hidden layer. Learns representations robust to small input changes.</p>
+</div>
+</div>
+
+<h2>Code Implementation</h2>
+<div class="code">import numpy as np
+import tensorflow as tf
+from tensorflow.keras import layers, Model
+from tensorflow.keras.datasets import mnist
+
+# Load data
+(X_train, _), (X_test, _) = mnist.load_data()
+X_train = X_train.astype('float32') / 255.0
+X_test = X_test.astype('float32') / 255.0
+X_train = X_train.reshape(-1, 784)
+X_test = X_test.reshape(-1, 784)
+
+# --- Vanilla Autoencoder ---
+latent_dim = 32
+
+# Encoder
+encoder_input = layers.Input(shape=(784,))
+x = layers.Dense(256, activation='relu')(encoder_input)
+x = layers.Dense(128, activation='relu')(x)
+latent = layers.Dense(latent_dim, activation='relu')(x)
+encoder = Model(encoder_input, latent, name='encoder')
+
+# Decoder
+decoder_input = layers.Input(shape=(latent_dim,))
+x = layers.Dense(128, activation='relu')(decoder_input)
+x = layers.Dense(256, activation='relu')(x)
+output = layers.Dense(784, activation='sigmoid')(x)
+decoder = Model(decoder_input, output, name='decoder')
+
+# Autoencoder
+autoencoder_input = layers.Input(shape=(784,))
+encoded = encoder(autoencoder_input)
+decoded = decoder(encoded)
+autoencoder = Model(autoencoder_input, decoded)
+
+autoencoder.compile(optimizer='adam', loss='mse')
+autoencoder.fit(X_train, X_train, epochs=20, batch_size=256,
+                validation_data=(X_test, X_test))
+
+# --- Denoising Autoencoder ---
+noise_factor = 0.3
+X_train_noisy = X_train + noise_factor * np.random.normal(size=X_train.shape)
+X_train_noisy = np.clip(X_train_noisy, 0., 1.)
+# Train with: autoencoder.fit(X_train_noisy, X_train, ...)  # noisy→clean
+
+# --- Use encoder for dimensionality reduction ---
+compressed = encoder.predict(X_test)  # Shape: (10000, 32)
+print(f"Compressed shape: {compressed.shape}")  # 784D → 32D</div>
+
+<h2>Applications</h2>
+<table>
+<tr><th>Application</th><th>How</th></tr>
+<tr><td><strong>Dimensionality Reduction</strong></td><td>Nonlinear alternative to PCA. Bottleneck = compressed features</td></tr>
+<tr><td><strong>Anomaly Detection</strong></td><td>Train on normal data. Anomalies have high reconstruction error</td></tr>
+<tr><td><strong>Image Denoising</strong></td><td>Denoising autoencoder removes noise from images</td></tr>
+<tr><td><strong>Data Generation</strong></td><td>VAEs sample from latent space to create new data</td></tr>
+<tr><td><strong>Feature Learning</strong></td><td>Use encoder output as features for downstream tasks</td></tr>
+<tr><td><strong>Image Compression</strong></td><td>Lossy compression by encoding to small latent space</td></tr>
+</table>
+
+<h2>Autoencoder vs PCA</h2>
+<div class="grid">
+<div class="grid-item">
+<h4>PCA</h4>
+<p>Linear transformation. Fast. Mathematically optimal for linear relationships. Limited to linear dimensionality reduction.</p>
+</div>
+<div class="grid-item">
+<h4>Autoencoder</h4>
+<p>Nonlinear transformation. Slower. Can capture complex patterns. More powerful but needs more data and tuning.</p>
+</div>
+</div>
+
+<div class="warning"><p>If your data has mostly linear relationships, PCA will work just as well and is much simpler. Use autoencoders when you need nonlinear compression.</p></div>
+
+</div>
+</body>
+</html>

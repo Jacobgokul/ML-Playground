@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Multi-Layer Perceptron - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">MLP</span>
+
+<a href="https://github.com/Jacobgokul/ML-Playground/blob/main/deep_learning/multi_layer_perceptron.ipynb" target="_blank" style="color:#94a3b8;text-decoration:none;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;margin-left:auto;transition:.15s" onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#94a3b8'"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> View Notebook</a>
+</div>
+<div class="container">
+
+<h1>Multi-Layer Perceptron (MLP)</h1>
+<p class="subtitle">A fully connected neural network for regression -- predicting house prices from tabular features using scikit-learn's MLPRegressor.</p>
+
+<h2>What is MLP?</h2>
+<p>A Multilayer Perceptron is a type of artificial neural network with multiple layers of fully connected neurons. It consists of an input layer, one or more hidden layers, and an output layer. MLP is one of the most fundamental deep learning models for supervised learning.</p>
+
+<div class="highlight"><p>MLP works well when the relationship between features and target is non-linear and cannot be captured by Linear Regression. For classification: use softmax/sigmoid output. For regression: use linear (no activation) output.</p></div>
+
+<h2>How It Works</h2>
+<div class="card">
+<div class="card-title">Architecture for This Example</div>
+<ol>
+<li><strong>Input Layer</strong> -- 3 features: Area_sqft, Bedrooms, Location_Index</li>
+<li><strong>Hidden Layer 1</strong> -- 64 neurons with ReLU activation</li>
+<li><strong>Hidden Layer 2</strong> -- 32 neurons with ReLU activation</li>
+<li><strong>Output Layer</strong> -- 1 neuron, linear activation (regression output)</li>
+</ol>
+</div>
+
+<h2>Code: Prepare Data</h2>
+<div class="code">import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neural_network import MLPRegressor
+from sklearn.metrics import mean_absolute_error, r2_score
+
+data = {
+    "Area_sqft": [1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000, 5500],
+    "Bedrooms": [2, 3, 3, 4, 4, 5, 5, 6, 6, 7],
+    "Location_Index": [1, 2, 1, 2, 3, 1, 3, 2, 3, 1],  # Encoded location values
+    "Price_Lakhs": [50, 70, 80, 110, 150, 130, 180, 200, 250, 270]  # Target
+}
+
+df = pd.DataFrame(data)
+
+X = df.drop(columns=["Price_Lakhs"])  # Features
+y = df["Price_Lakhs"]  # Target
+
+# Train-Test Split (80% Train, 20% Test)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)</div>
+
+<h2>Code: Scale and Train</h2>
+<div class="code"># Standardization (Neural Networks need scaled data)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+mlp_regressor = MLPRegressor(
+    hidden_layer_sizes=(64, 32),  # Two hidden layers (64 &amp; 32 neurons)
+    activation='relu',            # ReLU activation function
+    solver='adam',                 # Adam optimizer
+    learning_rate_init=0.1,
+    max_iter=10000,                # Number of iterations
+    random_state=42
+)
+
+mlp_regressor.fit(X_train_scaled, y_train)</div>
+
+<h2>Code: Predict and Evaluate</h2>
+<div class="code">y_pred = mlp_regressor.predict(X_test_scaled)
+
+mae = mean_absolute_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print(f"Mean Absolute Error (MAE): {mae:.2f}")
+print(f"R-squared Score: {r2:.2f}")</div>
+
+<div class="warning"><p>Always scale your features before training an MLP. Neural networks are sensitive to feature scales. StandardScaler (zero mean, unit variance) is the most common choice. Fit the scaler on training data only, then transform both train and test.</p></div>
+
+<h2>Key Parameters</h2>
+<ul>
+<li><strong>hidden_layer_sizes</strong>: Tuple defining the number of neurons in each hidden layer, e.g., (64, 32)</li>
+<li><strong>activation</strong>: 'relu' (default), 'tanh', 'logistic' (sigmoid)</li>
+<li><strong>solver</strong>: 'adam' (default, best for most cases), 'sgd', 'lbfgs' (good for small datasets)</li>
+<li><strong>learning_rate_init</strong>: Initial learning rate (default 0.001)</li>
+<li><strong>max_iter</strong>: Maximum training iterations</li>
+</ul>
+
+<h2>When to Use MLP</h2>
+<table>
+<tr><th>Good For</th><th>Not Ideal For</th></tr>
+<tr><td>Non-linear regression/classification</td><td>Image data (use CNNs)</td></tr>
+<tr><td>Tabular/structured data</td><td>Sequential data (use RNN/LSTM)</td></tr>
+<tr><td>Medium-sized datasets</td><td>Very large datasets (use deep learning frameworks)</td></tr>
+<tr><td>Quick prototyping with scikit-learn</td><td>When interpretability is required</td></tr>
+</table>
+
+<p><span class="tag">MLP</span><span class="tag">Regression</span><span class="tag">scikit-learn</span><span class="tag">StandardScaler</span><span class="tag">Adam</span></p>
+
+</div>
+</body>
+</html>

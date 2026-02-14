@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Natural Language Processing - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">NLP</span>
+
+<a href="https://github.com/Jacobgokul/ML-Playground/blob/main/advanced_topics/nlp.ipynb" target="_blank" style="color:#94a3b8;text-decoration:none;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;margin-left:auto;transition:.15s" onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#94a3b8'"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> View Notebook</a>
+</div>
+<div class="container">
+
+<h1>Natural Language Processing (NLP)</h1>
+<p class="subtitle">How machines understand, interpret, and generate human language -- from tokenization to word embeddings.</p>
+
+<h2>What is NLP?</h2>
+<p>Natural Language Processing is a field in AI that helps computers understand and work with human language. It powers Google Translate, Siri, Alexa, ChatGPT, spam filters, and sentiment analysis tools.</p>
+
+<div class="highlight"><p>Humans speak natural languages (English, Tamil, Hindi). Computers understand only numbers. NLP is the translator between the two.</p></div>
+
+<h2>What NLP Can Do</h2>
+<table>
+<tr><th>Task</th><th>Example</th></tr>
+<tr><td>Understand Meaning</td><td>Know that "I'm feeling down" means someone is sad</td></tr>
+<tr><td>Extract Information (NER)</td><td>Pull names, dates, locations from articles</td></tr>
+<tr><td>Translate Languages</td><td>English to Japanese using translation models</td></tr>
+<tr><td>Generate Text</td><td>Write paragraphs or code from prompts</td></tr>
+<tr><td>Summarize Documents</td><td>Condense a 2000-word article into 3 lines</td></tr>
+<tr><td>Answer Questions</td><td>Like ChatGPT does</td></tr>
+</table>
+
+<h2>1. Tokenization</h2>
+<p>Splits text into individual units (tokens) that ML models can process. Models cannot understand raw text -- they need discrete units.</p>
+
+<div class="grid">
+<div class="grid-item">
+<h4>Word Tokenization</h4>
+<p>"Hello world" -> ["Hello", "world"]</p>
+</div>
+<div class="grid-item">
+<h4>Character Tokenization</h4>
+<p>"Hello" -> ["H", "e", "l", "l", "o"]</p>
+</div>
+<div class="grid-item">
+<h4>Subword Tokenization</h4>
+<p>"playing" -> ["play", "##ing"] (used in Transformers)</p>
+</div>
+</div>
+
+<div class="code">from nltk.tokenize import word_tokenize
+word_tokenize("I'm learning NLP.")
+# ['I', "'m", 'learning', 'NLP', '.']</div>
+
+<h2>2. Stopword Removal</h2>
+<p>Remove frequent words like "the", "is", "a", "an" that carry little meaning in classification tasks.</p>
+
+<div class="code">from nltk.corpus import stopwords
+stopwords.words('english')  # includes 'is', 'the', etc.</div>
+
+<h2>3. Stemming vs Lemmatization</h2>
+<table>
+<tr><th>Stemming</th><th>Lemmatization</th></tr>
+<tr><td>Cuts suffix: "studies" -> "studi"</td><td>Finds root word: "studies" -> "study"</td></tr>
+<tr><td>Fast but less accurate</td><td>Slower but linguistically correct</td></tr>
+<tr><td>"Running" -> "Runn"</td><td>"Running" -> "Run"</td></tr>
+</table>
+
+<div class="code">from nltk.stem import PorterStemmer, WordNetLemmatizer
+import nltk
+nltk.download("wordnet")
+
+stemmer = PorterStemmer()
+lemmatizer = WordNetLemmatizer()
+
+print(stemmer.stem("studies"))          # studi
+print(lemmatizer.lemmatize("studies"))  # study</div>
+
+<h2>4. Bag of Words (BoW)</h2>
+<p>The simplest way to convert text to numbers. Count how many times each word appears -- ignore word order entirely.</p>
+
+<div class="formula">"I love NLP"    -> [1, 1, 1, 0]   (vocabulary: [I, love, NLP, Python])
+"I love Python" -> [1, 1, 0, 1]</div>
+
+<ul>
+<li><span class="pros">Pros:</span> Simple, works for spam detection and basic classification</li>
+<li><span class="cons">Cons:</span> Ignores word order ("dog bites man" = "man bites dog"), sparse matrix, no semantics</li>
+</ul>
+
+<div class="code">from sklearn.feature_extraction.text import CountVectorizer
+
+docs = ["I love NLP", "I love Python"]
+
+cv = CountVectorizer()
+X = cv.fit_transform(docs)
+
+print(cv.get_feature_names_out())  # ['love', 'nlp', 'python']
+print(X.toarray())                 # [[1, 1, 0], [1, 0, 1]]</div>
+
+<h2>5. TF-IDF (Term Frequency - Inverse Document Frequency)</h2>
+<p>Improves BoW by reducing the weight of common words and boosting rare but important terms.</p>
+
+<div class="formula">TF(t, d)  = Count of term t in document d / Total terms in document d
+IDF(t)    = log(Total documents / Documents containing term t)
+TF-IDF    = TF * IDF
+
+High TF-IDF: term is frequent in one doc but rare across corpus
+Low TF-IDF:  term is common everywhere (like "the") or absent</div>
+
+<div class="code">from sklearn.feature_extraction.text import TfidfVectorizer
+
+docs = ["I love NLP", "NLP loves me", "I love Python and NLP"]
+
+tfidf = TfidfVectorizer()
+X = tfidf.fit_transform(docs)
+
+print(tfidf.get_feature_names_out())
+print(X.toarray())</div>
+
+<h2>6. Word Embeddings</h2>
+<p>Dense vector representations where words with similar meaning are close in vector space. Unlike BoW/TF-IDF, embeddings capture semantic relationships.</p>
+
+<div class="highlight"><p>The famous analogy: king - man + woman = queen. This is only possible with embeddings, not BoW or TF-IDF.</p></div>
+
+<div class="grid">
+<div class="grid-item">
+<h4>Word2Vec (Google, 2013)</h4>
+<p>Trained on huge text corpora. Captures semantic analogies.</p>
+</div>
+<div class="grid-item">
+<h4>GloVe (Stanford, 2014)</h4>
+<p>Uses global word co-occurrence statistics.</p>
+</div>
+<div class="grid-item">
+<h4>FastText (Facebook, 2016)</h4>
+<p>Works with subwords. Handles rare words and misspellings.</p>
+</div>
+<div class="grid-item">
+<h4>BERT (Google, 2018)</h4>
+<p>Contextual embeddings. Same word gets different vectors in different sentences.</p>
+</div>
+</div>
+
+<div class="code">from gensim.models import Word2Vec
+
+# Training a small toy model
+sentences = [
+    ["I", "love", "natural", "language", "processing"],
+    ["I", "love", "deep", "learning"],
+    ["NLP", "is", "fun"],
+    ["Python", "is", "great", "for", "NLP"]
+]
+
+model = Word2Vec(sentences, vector_size=20, window=3, min_count=1)
+
+# Vector for word 'NLP'
+print(model.wv['NLP'])
+
+# Find similar words
+print(model.wv.most_similar('love'))</div>
+
+<h2>Progression of Text Representations</h2>
+<table>
+<tr><th>Method</th><th>Captures Meaning?</th><th>Word Order?</th><th>Context?</th></tr>
+<tr><td>Bag of Words</td><td>No</td><td>No</td><td>No</td></tr>
+<tr><td>TF-IDF</td><td>Partially (importance)</td><td>No</td><td>No</td></tr>
+<tr><td>Word2Vec / GloVe</td><td>Yes (static)</td><td>No</td><td>No</td></tr>
+<tr><td>BERT / Transformers</td><td>Yes (contextual)</td><td>Yes</td><td>Yes</td></tr>
+</table>
+
+<p><span class="tag">NLP</span><span class="tag">Tokenization</span><span class="tag">TF-IDF</span><span class="tag">BoW</span><span class="tag">Word2Vec</span><span class="tag">BERT</span><span class="tag">Embeddings</span></p>
+
+</div>
+</body>
+</html>

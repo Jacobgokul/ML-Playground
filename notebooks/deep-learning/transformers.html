@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Transformers - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">Transformers</span>
+</div>
+<div class="container">
+
+<h1>Transformer Architecture</h1>
+<p class="subtitle">The architecture behind GPT, BERT, and all modern LLMs. Self-attention is all you need.</p>
+
+<h2>What is a Transformer?</h2>
+<p>Introduced in the 2017 paper "Attention Is All You Need", the Transformer is a neural network architecture that processes sequences using self-attention instead of recurrence (RNN/LSTM). It can look at all positions in a sequence simultaneously, making it parallelizable and much faster to train than RNNs.</p>
+
+<div class="highlight"><p>Before Transformers, we processed words one at a time (RNN). Transformers see the entire sequence at once and learn which words to "pay attention to" for each word.</p></div>
+
+<h2>Key Innovation: Self-Attention</h2>
+<p>Self-attention lets each word look at every other word in the sequence and decide how much to "attend to" each one. For the sentence "The cat sat on the mat because it was tired", the word "it" needs to attend strongly to "cat" to understand the reference.</p>
+
+<div class="formula">Attention(Q, K, V) = softmax(Q × K^T / √d_k) × V
+
+Where:
+  Q (Query)  = "What am I looking for?"
+  K (Key)    = "What do I contain?"
+  V (Value)  = "What information do I provide?"
+  d_k        = dimension of keys (for scaling)
+
+Each word generates its own Q, K, V vectors from learned weight matrices.</div>
+
+<h2>Step-by-Step Attention</h2>
+<div class="card">
+<div class="card-title">Self-Attention Calculation</div>
+<ol>
+<li><strong>Create Q, K, V</strong> — Multiply each word embedding by learned weight matrices W_Q, W_K, W_V</li>
+<li><strong>Compute scores</strong> — Dot product of Q with every K: score = Q · K^T</li>
+<li><strong>Scale</strong> — Divide by √d_k to prevent large values that cause vanishing gradients in softmax</li>
+<li><strong>Softmax</strong> — Normalize scores to get attention weights (sum to 1)</li>
+<li><strong>Weighted sum</strong> — Multiply each V by its attention weight and sum up</li>
+</ol>
+</div>
+
+<h2>Multi-Head Attention</h2>
+<p>Instead of one attention function, run multiple attention "heads" in parallel. Each head can focus on different types of relationships:</p>
+<div class="formula">MultiHead(Q, K, V) = Concat(head_1, head_2, ..., head_h) × W_O
+
+head_i = Attention(Q × W_Q_i, K × W_K_i, V × W_V_i)
+
+Example: 8 heads, each with d_k = 64, total dimension = 512
+  Head 1 might focus on: syntactic relationships (subject-verb)
+  Head 2 might focus on: coreference (pronoun-noun)
+  Head 3 might focus on: positional proximity</div>
+
+<h2>Full Transformer Architecture</h2>
+<div class="formula">ENCODER (processes input):
+  Input Embedding + Positional Encoding
+  → [Multi-Head Self-Attention → Add & Norm → Feed-Forward → Add & Norm] × N layers
+
+DECODER (generates output):
+  Output Embedding + Positional Encoding
+  → [Masked Multi-Head Self-Attention → Add & Norm
+     → Cross-Attention (attend to encoder) → Add & Norm
+     → Feed-Forward → Add & Norm] × N layers
+  → Linear → Softmax → Output Probabilities</div>
+
+<h2>Positional Encoding</h2>
+<p>Since Transformers process all words in parallel (no recurrence), they have no sense of word order. Positional encoding adds position information to each word embedding:</p>
+<div class="formula">PE(pos, 2i)   = sin(pos / 10000^(2i/d_model))
+PE(pos, 2i+1) = cos(pos / 10000^(2i/d_model))
+
+This gives each position a unique pattern that the model can learn to use.</div>
+
+<h2>Code: Simple Self-Attention</h2>
+<div class="code">import numpy as np
+
+def self_attention(Q, K, V):
+    d_k = Q.shape[-1]
+    scores = np.matmul(Q, K.T) / np.sqrt(d_k)    # Scale dot product
+    weights = np.exp(scores) / np.sum(np.exp(scores), axis=-1, keepdims=True)  # Softmax
+    output = np.matmul(weights, V)                  # Weighted sum of values
+    return output, weights
+
+# Example: 3 words, embedding dim = 4
+np.random.seed(42)
+embeddings = np.random.randn(3, 4)  # 3 words, 4 dimensions
+
+# In practice, Q/K/V come from learned projections
+# Here we simplify: Q = K = V = embeddings
+output, attention_weights = self_attention(embeddings, embeddings, embeddings)
+print("Attention weights (which words attend to which):")
+print(np.round(attention_weights, 3))
+print("\nOutput (context-aware representations):")
+print(np.round(output, 3))</div>
+
+<h2>BERT vs GPT</h2>
+<div class="grid">
+<div class="grid-item">
+<h4>BERT (Encoder-only)</h4>
+<p>Bidirectional — sees full context. Pre-trained with Masked Language Model. Best for: classification, NER, QA, embeddings.</p>
+</div>
+<div class="grid-item">
+<h4>GPT (Decoder-only)</h4>
+<p>Autoregressive — left-to-right only. Pre-trained to predict next token. Best for: text generation, conversation, code.</p>
+</div>
+</div>
+
+<h2>Why Transformers Won</h2>
+<table>
+<tr><th>Feature</th><th>RNN/LSTM</th><th>Transformer</th></tr>
+<tr><td>Parallelization</td><td>Sequential (slow)</td><td>Fully parallel (fast)</td></tr>
+<tr><td>Long-range dependencies</td><td>Vanishing gradients</td><td>Direct attention to any position</td></tr>
+<tr><td>Training speed</td><td>Slow on long sequences</td><td>Fast with GPU parallelism</td></tr>
+<tr><td>Scalability</td><td>Limited</td><td>Scales to billions of parameters</td></tr>
+</table>
+
+<div class="warning"><p>Self-attention has O(n²) complexity with sequence length. For very long sequences (>4096 tokens), variants like Longformer or Flash Attention are needed.</p></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Generative Adversarial Networks (GANs) - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">Generative Adversarial Networks (GANs)</span>
+</div>
+<div class="container">
+
+<h1>Generative Adversarial Networks</h1>
+<p class="subtitle">Two neural networks competing against each other to generate realistic synthetic data.</p>
+
+<h2>What are GANs?</h2>
+<p>Introduced by Ian Goodfellow in 2014, GANs consist of two neural networks trained simultaneously in a game-theoretic framework. One network (Generator) creates fake data, and the other (Discriminator) tries to distinguish real data from fake. Through this competition, the Generator learns to produce increasingly realistic outputs.</p>
+
+<div class="highlight"><p>Think of it as a counterfeiter (Generator) trying to make fake money, and a detective (Discriminator) trying to catch the fakes. Both get better over time.</p></div>
+
+<h2>Architecture</h2>
+<div class="grid">
+<div class="grid-item">
+<h4>Generator (G)</h4>
+<p>Takes random noise (latent vector z) as input and transforms it into synthetic data (images, text, etc). Goal: fool the Discriminator.</p>
+</div>
+<div class="grid-item">
+<h4>Discriminator (D)</h4>
+<p>Takes both real and generated data as input and outputs a probability of the data being real. Goal: correctly identify fakes.</p>
+</div>
+</div>
+
+<h2>How Training Works</h2>
+<div class="card">
+<div class="card-title">Training Loop</div>
+<ol>
+<li><strong>Sample random noise</strong> z from a distribution (usually Gaussian)</li>
+<li><strong>Generator creates</strong> fake data: G(z)</li>
+<li><strong>Discriminator evaluates</strong> both real data and G(z)</li>
+<li><strong>Update Discriminator</strong> — reward it for correctly classifying real vs fake</li>
+<li><strong>Update Generator</strong> — reward it when the Discriminator is fooled</li>
+<li><strong>Repeat</strong> until equilibrium (Discriminator can't tell the difference)</li>
+</ol>
+</div>
+
+<h2>Loss Functions</h2>
+<div class="formula">Discriminator Loss:
+  L_D = -[log(D(x_real)) + log(1 - D(G(z)))]
+  → Maximize: correctly classify real as real, fake as fake
+
+Generator Loss:
+  L_G = -log(D(G(z)))
+  → Minimize: make Discriminator think fake is real
+
+Combined (Minimax Game):
+  min_G max_D  E[log(D(x))] + E[log(1 - D(G(z)))]</div>
+
+<h2>Code Implementation (Simple GAN with Keras)</h2>
+<div class="code">import numpy as np
+import tensorflow as tf
+from tensorflow.keras import layers, Model
+
+# --- Generator ---
+def build_generator(latent_dim=100):
+    model = tf.keras.Sequential([
+        layers.Dense(256, input_dim=latent_dim),
+        layers.LeakyReLU(0.2),
+        layers.BatchNormalization(),
+        layers.Dense(512),
+        layers.LeakyReLU(0.2),
+        layers.BatchNormalization(),
+        layers.Dense(784, activation='tanh'),  # 28x28 = 784 for MNIST
+        layers.Reshape((28, 28, 1))
+    ])
+    return model
+
+# --- Discriminator ---
+def build_discriminator():
+    model = tf.keras.Sequential([
+        layers.Flatten(input_shape=(28, 28, 1)),
+        layers.Dense(512),
+        layers.LeakyReLU(0.2),
+        layers.Dropout(0.3),
+        layers.Dense(256),
+        layers.LeakyReLU(0.2),
+        layers.Dropout(0.3),
+        layers.Dense(1, activation='sigmoid')  # Real or Fake
+    ])
+    return model
+
+# --- Training Step ---
+latent_dim = 100
+generator = build_generator(latent_dim)
+discriminator = build_discriminator()
+
+cross_entropy = tf.keras.losses.BinaryCrossentropy()
+
+def train_step(real_images, batch_size=64):
+    # Generate fake images
+    noise = tf.random.normal([batch_size, latent_dim])
+    fake_images = generator(noise, training=True)
+
+    # Train Discriminator
+    with tf.GradientTape() as disc_tape:
+        real_output = discriminator(real_images, training=True)
+        fake_output = discriminator(fake_images, training=True)
+        d_loss = cross_entropy(tf.ones_like(real_output), real_output) + \
+                 cross_entropy(tf.zeros_like(fake_output), fake_output)
+
+    # Train Generator
+    with tf.GradientTape() as gen_tape:
+        noise = tf.random.normal([batch_size, latent_dim])
+        generated = generator(noise, training=True)
+        fake_output = discriminator(generated, training=True)
+        g_loss = cross_entropy(tf.ones_like(fake_output), fake_output)
+
+    return d_loss, g_loss</div>
+
+<h2>Common GAN Variants</h2>
+<table>
+<tr><th>Variant</th><th>Key Idea</th><th>Use Case</th></tr>
+<tr><td><strong>DCGAN</strong></td><td>Uses convolutional layers instead of fully connected</td><td>Image generation</td></tr>
+<tr><td><strong>WGAN</strong></td><td>Wasserstein distance for more stable training</td><td>Fixes mode collapse</td></tr>
+<tr><td><strong>Conditional GAN</strong></td><td>Generator takes class labels as additional input</td><td>Generate specific classes</td></tr>
+<tr><td><strong>CycleGAN</strong></td><td>Unpaired image-to-image translation</td><td>Horse→Zebra, Photo→Monet</td></tr>
+<tr><td><strong>StyleGAN</strong></td><td>Style-based generator with progressive growing</td><td>Photorealistic faces</td></tr>
+<tr><td><strong>Pix2Pix</strong></td><td>Paired image-to-image translation</td><td>Sketch→Photo, Map→Satellite</td></tr>
+</table>
+
+<h2>Training Challenges</h2>
+<div class="grid">
+<div class="grid-item">
+<h4>Mode Collapse</h4>
+<p>Generator learns to produce only a few types of output instead of diverse samples. Fix: use WGAN, minibatch discrimination, or unrolled GANs.</p>
+</div>
+<div class="grid-item">
+<h4>Training Instability</h4>
+<p>Discriminator gets too strong or too weak. The two networks must stay balanced. Fix: learning rate scheduling, spectral normalization.</p>
+</div>
+<div class="grid-item">
+<h4>Vanishing Gradients</h4>
+<p>When Discriminator is perfect, Generator gets no useful gradient signal. Fix: use Wasserstein loss or feature matching.</p>
+</div>
+<div class="grid-item">
+<h4>Evaluation</h4>
+<p>Hard to measure quality objectively. Common metrics: FID (Frechet Inception Distance) and IS (Inception Score).</p>
+</div>
+</div>
+
+<h2>Real-World Applications</h2>
+<ul>
+<li><strong>Image synthesis</strong> — Generate photorealistic faces, art, product images</li>
+<li><strong>Data augmentation</strong> — Create synthetic training data for rare classes</li>
+<li><strong>Super-resolution</strong> — Upscale low-resolution images (SRGAN)</li>
+<li><strong>Drug discovery</strong> — Generate novel molecular structures</li>
+<li><strong>Video generation</strong> — Predict future frames, create deepfakes</li>
+<li><strong>Text-to-image</strong> — Generate images from text descriptions</li>
+</ul>
+
+<div class="warning"><p>GANs are computationally expensive and can be tricky to train. Start with DCGAN on MNIST before attempting complex architectures.</p></div>
+
+</div>
+</body>
+</html>

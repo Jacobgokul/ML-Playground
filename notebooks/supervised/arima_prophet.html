@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ARIMA & Prophet - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">ARIMA & Prophet</span>
+</div>
+<div class="container">
+
+<h1>ARIMA &amp; Prophet</h1>
+<p class="subtitle">Classical and modern approaches to time series forecasting. Predict future values from historical trends, seasonality, and patterns.</p>
+
+<h2>Time Series Basics</h2>
+<p>A time series has three main components:</p>
+<div class="grid">
+<div class="grid-item">
+<h4>Trend</h4>
+<p>Long-term increase or decrease. Example: global temperatures rising over decades.</p>
+</div>
+<div class="grid-item">
+<h4>Seasonality</h4>
+<p>Repeating patterns at fixed intervals. Example: ice cream sales peaking every summer.</p>
+</div>
+<div class="grid-item">
+<h4>Noise (Residual)</h4>
+<p>Random fluctuations that can't be explained by trend or seasonality.</p>
+</div>
+</div>
+
+<h2>ARIMA: AutoRegressive Integrated Moving Average</h2>
+<p>ARIMA combines three components into one model, defined by three parameters (p, d, q):</p>
+<div class="formula">ARIMA(p, d, q):
+
+  AR (AutoRegressive, p):  Use past values to predict future
+    y_t = c + φ₁y_{t-1} + φ₂y_{t-2} + ... + φ_py_{t-p}
+
+  I  (Integrated, d):      Differencing to make data stationary
+    y'_t = y_t - y_{t-1}   (d=1: first difference)
+
+  MA (Moving Average, q):  Use past forecast errors
+    y_t = c + θ₁ε_{t-1} + θ₂ε_{t-2} + ... + θ_qε_{t-q}
+
+  p = number of lag observations (AR terms)
+  d = number of times differenced (to remove trend)
+  q = size of moving average window (MA terms)</div>
+
+<h3>Stationarity</h3>
+<p>ARIMA requires stationary data (constant mean and variance over time). Use the ADF (Augmented Dickey-Fuller) test to check:</p>
+<div class="code">from statsmodels.tsa.stattools import adfuller
+import pandas as pd
+import numpy as np
+
+# Generate sample data with trend
+np.random.seed(42)
+dates = pd.date_range('2020-01-01', periods=200, freq='D')
+data = np.cumsum(np.random.randn(200)) + np.arange(200) * 0.1  # trend + noise
+ts = pd.Series(data, index=dates)
+
+# ADF test
+result = adfuller(ts)
+print(f"ADF Statistic: {result[0]:.4f}")
+print(f"p-value:       {result[1]:.4f}")
+# p-value > 0.05 → NOT stationary, need differencing (d > 0)
+
+# After differencing:
+ts_diff = ts.diff().dropna()
+result = adfuller(ts_diff)
+print(f"After diff - p-value: {result[1]:.4f}")
+# p-value < 0.05 → stationary, use d=1</div>
+
+<h3>ARIMA Code</h3>
+<div class="code">from statsmodels.tsa.arima.model import ARIMA
+import matplotlib.pyplot as plt
+
+# Fit ARIMA(2,1,2)
+model = ARIMA(ts, order=(2, 1, 2))
+fitted = model.fit()
+print(fitted.summary())
+
+# Forecast next 30 days
+forecast = fitted.forecast(steps=30)
+
+# Plot
+plt.figure(figsize=(12, 5))
+plt.plot(ts, label='Actual')
+plt.plot(forecast.index, forecast.values, 'r--', label='Forecast')
+plt.legend()
+plt.title('ARIMA Forecast')
+plt.show()
+
+# Auto ARIMA (finds best p,d,q automatically)
+# pip install pmdarima
+from pmdarima import auto_arima
+auto_model = auto_arima(ts, seasonal=False, trace=True)
+print(f"Best order: {auto_model.order}")</div>
+
+<h2>SARIMA: Seasonal ARIMA</h2>
+<p>Extends ARIMA with seasonal components. SARIMA(p,d,q)(P,D,Q,s) where s = seasonal period (12 for monthly, 7 for daily):</p>
+<div class="code"># SARIMA with monthly seasonality
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+
+model = SARIMAX(ts, order=(1,1,1), seasonal_order=(1,1,1,12))
+fitted = model.fit()
+forecast = fitted.forecast(steps=30)</div>
+
+<h2>Facebook Prophet</h2>
+<p>Developed by Facebook (Meta) for business forecasting. Designed to be easy to use, handle missing data, and detect holidays/events automatically.</p>
+
+<div class="highlight"><p>Prophet is additive: y(t) = trend(t) + seasonality(t) + holidays(t) + error(t). Each component is modeled separately, making it interpretable.</p></div>
+
+<h3>Prophet Code</h3>
+<div class="code"># pip install prophet
+from prophet import Prophet
+import pandas as pd
+
+# Prophet requires columns named 'ds' (date) and 'y' (value)
+df = pd.DataFrame({'ds': dates, 'y': data})
+
+# Fit
+model = Prophet(
+    yearly_seasonality=True,
+    weekly_seasonality=True,
+    daily_seasonality=False,
+    changepoint_prior_scale=0.05  # Flexibility of trend changes
+)
+model.fit(df)
+
+# Forecast
+future = model.make_future_dataframe(periods=30)  # 30 days ahead
+forecast = model.predict(future)
+
+# Plot
+model.plot(forecast)
+model.plot_components(forecast)  # Shows trend + seasonality separately
+
+# Add holidays
+holidays = pd.DataFrame({
+    'holiday': 'black_friday',
+    'ds': pd.to_datetime(['2020-11-27', '2021-11-26', '2022-11-25']),
+    'lower_window': -1,  # 1 day before
+    'upper_window': 1    # 1 day after
+})
+model = Prophet(holidays=holidays)
+model.fit(df)</div>
+
+<h2>ARIMA vs Prophet</h2>
+<table>
+<tr><th>Feature</th><th>ARIMA</th><th>Prophet</th></tr>
+<tr><td>Ease of use</td><td>Needs parameter tuning (p,d,q)</td><td>Works out of the box</td></tr>
+<tr><td>Missing data</td><td>Can't handle gaps</td><td>Handles gracefully</td></tr>
+<tr><td>Multiple seasonality</td><td>One seasonal period</td><td>Multiple (daily, weekly, yearly)</td></tr>
+<tr><td>Holidays/events</td><td>No built-in support</td><td>Built-in holiday effects</td></tr>
+<tr><td>Interpretability</td><td>Mathematical (coefficients)</td><td>Visual (component plots)</td></tr>
+<tr><td>Best for</td><td>Short-term, stationary data</td><td>Business forecasting with trends</td></tr>
+</table>
+
+<div class="warning"><p>Neither ARIMA nor Prophet can predict sudden events (pandemics, crashes). They work best when the future resembles the past.</p></div>
+
+</div>
+</body>
+</html>

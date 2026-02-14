@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Model Deployment - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">Model Deployment</span>
+</div>
+<div class="container">
+
+<h1>Model Deployment</h1>
+<p class="subtitle">Take your trained model from a Jupyter notebook to a production API that serves real predictions.</p>
+
+<h2>The ML Pipeline</h2>
+<div class="formula">Notebook → Save Model → Build API → Containerize → Deploy → Monitor
+
+  1. Train model in notebook
+  2. Save/serialize the model (pickle, joblib, ONNX)
+  3. Wrap it in a web API (Flask / FastAPI)
+  4. Containerize with Docker (optional but recommended)
+  5. Deploy to cloud (AWS, GCP, Heroku, etc.)
+  6. Monitor predictions and retrain when needed</div>
+
+<h2>Step 1: Save Your Model</h2>
+<div class="code">import joblib
+import pickle
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import load_iris
+
+# Train
+X, y = load_iris(return_X_y=True)
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+model.fit(X, y)
+
+# --- Option A: joblib (recommended for sklearn) ---
+joblib.dump(model, 'model.joblib')
+loaded_model = joblib.load('model.joblib')
+
+# --- Option B: pickle ---
+with open('model.pkl', 'wb') as f:
+    pickle.dump(model, f)
+with open('model.pkl', 'rb') as f:
+    loaded_model = pickle.load(f)
+
+# --- Option C: ONNX (cross-platform, fastest inference) ---
+# pip install skl2onnx onnxruntime
+from skl2onnx import convert_sklearn
+from skl2onnx.common.data_types import FloatTensorType
+initial_type = [('input', FloatTensorType([None, 4]))]
+onnx_model = convert_sklearn(model, initial_types=initial_type)
+with open('model.onnx', 'wb') as f:
+    f.write(onnx_model.SerializeToString())</div>
+
+<h2>Step 2: Build API with FastAPI</h2>
+<div class="code"># app.py
+from fastapi import FastAPI
+from pydantic import BaseModel
+import joblib
+import numpy as np
+
+app = FastAPI(title="Iris Classifier API")
+model = joblib.load("model.joblib")
+
+class PredictRequest(BaseModel):
+    sepal_length: float
+    sepal_width: float
+    petal_length: float
+    petal_width: float
+
+class PredictResponse(BaseModel):
+    prediction: str
+    confidence: float
+
+CLASSES = ["setosa", "versicolor", "virginica"]
+
+@app.post("/predict", response_model=PredictResponse)
+def predict(req: PredictRequest):
+    features = np.array([[req.sepal_length, req.sepal_width,
+                          req.petal_length, req.petal_width]])
+    prediction = model.predict(features)[0]
+    proba = model.predict_proba(features)[0]
+    return PredictResponse(
+        prediction=CLASSES[prediction],
+        confidence=round(float(proba.max()), 4)
+    )
+
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
+# Run: uvicorn app:app --host 0.0.0.0 --port 8000
+# Test: curl -X POST http://localhost:8000/predict \
+#   -H "Content-Type: application/json" \
+#   -d '{"sepal_length":5.1,"sepal_width":3.5,"petal_length":1.4,"petal_width":0.2}'</div>
+
+<h2>Step 2 (Alternative): Flask API</h2>
+<div class="code"># app_flask.py
+from flask import Flask, request, jsonify
+import joblib
+import numpy as np
+
+app = Flask(__name__)
+model = joblib.load("model.joblib")
+CLASSES = ["setosa", "versicolor", "virginica"]
+
+@app.route("/predict", methods=["POST"])
+def predict():
+    data = request.json
+    features = np.array([[data["sepal_length"], data["sepal_width"],
+                          data["petal_length"], data["petal_width"]]])
+    prediction = model.predict(features)[0]
+    return jsonify({"prediction": CLASSES[prediction]})
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+
+# Run: python app_flask.py</div>
+
+<h2>Step 3: Dockerize</h2>
+<div class="code"># Dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY model.joblib .
+COPY app.py .
+
+EXPOSE 8000
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]</div>
+<div class="code"># requirements.txt
+fastapi==0.104.1
+uvicorn==0.24.0
+joblib==1.3.2
+scikit-learn==1.3.2
+numpy==1.26.2</div>
+<div class="code"># Build and run
+docker build -t iris-api .
+docker run -p 8000:8000 iris-api</div>
+
+<h2>Step 4: Deploy Options</h2>
+<table>
+<tr><th>Platform</th><th>Complexity</th><th>Cost</th><th>Best For</th></tr>
+<tr><td><strong>Heroku</strong></td><td>Low</td><td>Free tier</td><td>Quick demos, prototypes</td></tr>
+<tr><td><strong>Railway / Render</strong></td><td>Low</td><td>Free tier</td><td>Simple deployments</td></tr>
+<tr><td><strong>AWS Lambda</strong></td><td>Medium</td><td>Pay per request</td><td>Serverless, low traffic</td></tr>
+<tr><td><strong>AWS EC2 / GCP</strong></td><td>High</td><td>Hourly</td><td>Full control, high traffic</td></tr>
+<tr><td><strong>Streamlit Cloud</strong></td><td>Very Low</td><td>Free</td><td>Interactive ML demos with UI</td></tr>
+</table>
+
+<h2>Step 5: Monitoring</h2>
+<ul>
+<li><strong>Data drift</strong> — Is incoming data different from training data?</li>
+<li><strong>Model drift</strong> — Is accuracy degrading over time?</li>
+<li><strong>Latency</strong> — How fast are predictions? (Target: &lt;100ms)</li>
+<li><strong>Error rate</strong> — How many requests fail?</li>
+<li><strong>Retraining trigger</strong> — When to retrain with new data</li>
+</ul>
+
+<div class="warning"><p>Never deploy a model without input validation. Always check for missing values, out-of-range features, and wrong data types before prediction.</p></div>
+
+</div>
+</body>
+</html>

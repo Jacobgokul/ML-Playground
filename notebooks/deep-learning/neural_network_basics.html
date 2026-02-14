@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Neural Network Basics - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">Neural Network Basics</span>
+
+<a href="https://github.com/Jacobgokul/ML-Playground/blob/main/deep_learning/neural_network_basics.ipynb" target="_blank" style="color:#94a3b8;text-decoration:none;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;margin-left:auto;transition:.15s" onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#94a3b8'"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> View Notebook</a>
+</div>
+<div class="container">
+
+<h1>Neural Network Basics</h1>
+<p class="subtitle">Building and training an Artificial Neural Network (ANN) for handwritten digit classification using MNIST.</p>
+
+<h2>What is an ANN?</h2>
+<p>An Artificial Neural Network is a stack of layers: an input layer, one or more hidden layers, and an output layer. Each layer contains neurons that apply weights, biases, and an activation function to transform inputs into outputs. This is the foundation of all deep learning.</p>
+
+<div class="highlight"><p>This notebook builds a simple feedforward ANN that recognizes handwritten digits (0-9) from the MNIST dataset with ~98% accuracy.</p></div>
+
+<h2>How It Works</h2>
+<div class="card">
+<div class="card-title">Architecture: MNIST Digit Classifier</div>
+<ol>
+<li><strong>Flatten(28, 28)</strong> -- Convert 28x28 pixel image into a 1D vector of 784 values</li>
+<li><strong>Dense(128, relu)</strong> -- First hidden layer: 128 neurons learn features</li>
+<li><strong>Dense(64, relu)</strong> -- Second hidden layer: 64 neurons learn higher-level features</li>
+<li><strong>Dense(10, softmax)</strong> -- Output layer: 10 neurons (one per digit), probabilities sum to 1</li>
+</ol>
+</div>
+
+<h3>Key Components</h3>
+<ul>
+<li><strong>ReLU activation</strong>: f(x) = max(0, x). Introduces non-linearity, avoids vanishing gradient.</li>
+<li><strong>Softmax activation</strong>: Converts raw outputs into probabilities. The highest probability is the predicted digit.</li>
+<li><strong>Adam optimizer</strong>: Efficient weight updates combining momentum and adaptive learning rates.</li>
+<li><strong>sparse_categorical_crossentropy</strong>: Loss function for multi-class classification with integer labels (not one-hot encoded).</li>
+</ul>
+
+<h2>Code: Load and Prepare Data</h2>
+<div class="code">import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Flatten
+from tensorflow.keras.optimizers import Adam
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Load the MNIST dataset
+(x_train, y_train), (x_test, y_test) = keras.datasets.mnist.load_data()
+
+# Normalize pixel values (0-255 -> 0-1)
+x_train, x_test = x_train / 255.0, x_test / 255.0
+
+# Display a sample image
+plt.imshow(x_train[2], cmap='gray')
+plt.title(f"Label: {y_train[2]}")
+plt.show()</div>
+
+<h2>Code: Build the Model</h2>
+<div class="code"># Define the ANN model
+model = Sequential([
+    Flatten(input_shape=(28, 28)),  # Convert 2D image to 1D vector
+    Dense(128, activation='relu'),  # First hidden layer with 128 neurons
+    Dense(64, activation='relu'),   # Second hidden layer with 64 neurons
+    Dense(10, activation='softmax') # Output layer for 10 classes (0-9)
+])</div>
+
+<h2>Code: Compile and Train</h2>
+<div class="code">model.compile(optimizer=Adam(),
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+history = model.fit(x_train, y_train, epochs=10, validation_data=(x_test, y_test))</div>
+
+<h2>Code: Evaluate and Predict</h2>
+<div class="code">test_loss, test_acc = model.evaluate(x_test, y_test)
+print(f"Test Accuracy: {test_acc:.2f}")
+
+predictions = model.predict(x_test)
+predicted_label = np.argmax(predictions[0])  # Get the most probable digit
+
+# Show the predicted and actual label
+plt.imshow(x_test[0], cmap='gray')
+plt.title(f"Predicted: {predicted_label}, Actual: {y_test[0]}")
+plt.show()</div>
+
+<h2>Code: Plot Training History</h2>
+<div class="code">plt.plot(history.history['accuracy'], label='train_acc')
+plt.plot(history.history['val_accuracy'], label='val_acc')
+plt.title('Accuracy over epochs')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()</div>
+
+<h2>When to Use ANNs</h2>
+<table>
+<tr><th>Good For</th><th>Not Ideal For</th></tr>
+<tr><td>Tabular/structured data</td><td>Images (use CNNs instead)</td></tr>
+<tr><td>Simple classification/regression</td><td>Sequential data (use RNN/LSTM)</td></tr>
+<tr><td>Quick baseline deep learning model</td><td>Very small datasets (use classical ML)</td></tr>
+</table>
+
+<div class="warning"><p>ANNs with Dense layers treat each pixel independently -- they ignore spatial structure. For image tasks, CNNs are significantly better. ANNs work well on MNIST because the digits are centered and simple.</p></div>
+
+<p><span class="tag">ANN</span><span class="tag">MNIST</span><span class="tag">Keras</span><span class="tag">Softmax</span><span class="tag">ReLU</span><span class="tag">Adam</span></p>
+
+</div>
+</body>
+</html>

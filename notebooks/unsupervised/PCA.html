@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PCA - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">PCA</span>
+
+<a href="https://github.com/Jacobgokul/ML-Playground/blob/main/machine_learning/unsupervised/PCA.ipynb" target="_blank" style="color:#94a3b8;text-decoration:none;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;margin-left:auto;transition:.15s" onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#94a3b8'"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> View Notebook</a>
+</div>
+<div class="container">
+
+<h1>PCA &mdash; Principal Component Analysis</h1>
+<p class="subtitle">A dimensionality reduction technique that transforms high-dimensional data into fewer dimensions while preserving the most important variance.</p>
+
+<h2>What It Is</h2>
+<p>PCA reduces the number of features (columns) in your data while keeping the most important information. It finds new axes called Principal Components that capture the maximum variance in the data, then projects data onto the top few components.</p>
+
+<div class="highlight"><p>PCA is the most widely used dimensionality reduction technique. Use it to visualize high-dimensional data in 2D/3D, speed up ML models, remove noise, and handle multicollinearity.</p></div>
+
+<h2>Key Idea</h2>
+<p>PCA finds directions (principal components) along which your data varies the most. The first component captures maximum variance, the second captures the next most (orthogonal to the first), and so on. You keep only the top components and discard the rest.</p>
+
+<div class="formula">Original: 64 features (8x8 pixel images)
+After PCA: 2 features (PC1, PC2)
+
+Each principal component is a linear combination of original features.
+PC1 = w1*x1 + w2*x2 + ... + wn*xn</div>
+
+<h2>How It Works</h2>
+<div class="card">
+<div class="card-title">Algorithm Steps</div>
+<ol>
+<li><strong>Standardize the data</strong> &mdash; Make all features have mean=0, std=1 (essential when features have different scales)</li>
+<li><strong>Compute covariance matrix</strong> &mdash; Measures how features vary together</li>
+<li><strong>Find eigenvectors and eigenvalues</strong> &mdash; Eigenvectors = new directions (principal components). Eigenvalues = importance (variance captured by each)</li>
+<li><strong>Sort by eigenvalues</strong> (largest first)</li>
+<li><strong>Project data</strong> onto the top k components to get the reduced dataset</li>
+</ol>
+</div>
+
+<h2>Code: PCA on Handwritten Digits</h2>
+<div class="code">import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+from sklearn.datasets import load_digits
+
+# Load sample dataset (handwritten digits 0-9)
+digits = load_digits()
+X = digits.data  # 64 features (8x8 pixels)
+y = digits.target
+
+# Show first 10 digit images
+fig, axes = plt.subplots(1, 10, figsize=(10, 3))
+for i in range(10):
+    axes[i].imshow(digits.images[i], cmap="gray")
+    axes[i].set_title(f"Label: {y[i]}")
+    axes[i].axis("off")
+plt.show()</div>
+
+<h3>Apply PCA and Visualize</h3>
+<div class="code"># Apply PCA to reduce 64 dimensions to 2
+pca = PCA(n_components=2)
+X_reduced = pca.fit_transform(X)
+
+print("Original shape:", X.shape)       # (1797, 64)
+print("Reduced shape:", X_reduced.shape) # (1797, 2)
+
+# Plot results
+plt.scatter(X_reduced[:, 0], X_reduced[:, 1], c=y, cmap="tab10", s=30)
+plt.title("PCA - Digits dataset reduced to 2D")
+plt.xlabel("PC1")
+plt.ylabel("PC2")
+plt.colorbar()
+plt.show()</div>
+
+<h3>Compare Original vs Reduced</h3>
+<div class="code"># Side-by-side visualization
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+# LEFT: Show some original digit images
+for i in range(10):
+    axes[0].imshow(digits.images[i], cmap="gray")
+    axes[0].set_title("Original Digits (8x8 images)")
+    axes[0].axis("off")
+
+# RIGHT: Show PCA-reduced 2D scatter plot
+scatter = axes[1].scatter(X_reduced[:, 0], X_reduced[:, 1], c=y, cmap="tab10", s=15)
+axes[1].set_title("PCA Projection (64D -> 2D)")
+axes[1].set_xlabel("PC1")
+axes[1].set_ylabel("PC2")
+
+legend = axes[1].legend(*scatter.legend_elements(), title="Digits")
+axes[1].add_artist(legend)
+
+plt.tight_layout()
+plt.show()</div>
+
+<h2>How Many Components to Keep?</h2>
+<p>Use the explained variance ratio to decide. Plot cumulative variance and pick the number of components that explain 90-95% of the total variance.</p>
+<div class="code">pca_full = PCA().fit(X)
+cumulative_var = np.cumsum(pca_full.explained_variance_ratio_)
+
+plt.plot(cumulative_var)
+plt.xlabel("Number of Components")
+plt.ylabel("Cumulative Explained Variance")
+plt.axhline(y=0.95, color='r', linestyle='--', label='95% threshold')
+plt.title("Explained Variance vs Components")
+plt.legend()
+plt.show()</div>
+
+<h2>When to Use PCA</h2>
+<table>
+<tr><th>Good For</th><th>Not Ideal For</th></tr>
+<tr><td>Reducing features before training ML models</td><td>When all features are equally important</td></tr>
+<tr><td>Visualizing high-dimensional data in 2D/3D</td><td>Non-linear relationships (use t-SNE or UMAP instead)</td></tr>
+<tr><td>Removing noise and redundant features</td><td>Categorical data (PCA needs numeric features)</td></tr>
+<tr><td>Speeding up model training</td><td>When interpretability of features is critical</td></tr>
+</table>
+
+<div class="warning"><p>Always standardize your data before PCA. Features on larger scales will dominate the principal components otherwise. PCA captures linear relationships only; for non-linear data, consider kernel PCA, t-SNE, or UMAP.</p></div>
+
+<h2>Key Parameters</h2>
+<ul>
+<li><strong>n_components</strong> &mdash; Number of components to keep. Can be an integer (exact count) or a float between 0 and 1 (e.g., 0.95 means "keep enough to explain 95% of variance")</li>
+<li><strong>svd_solver</strong> &mdash; Algorithm to use ('auto', 'full', 'arpack', 'randomized')</li>
+</ul>
+
+<p><span class="tag">Unsupervised</span> <span class="tag">Dimensionality Reduction</span> <span class="tag">Feature Engineering</span> <span class="tag">sklearn</span></p>
+
+</div>
+</body>
+</html>

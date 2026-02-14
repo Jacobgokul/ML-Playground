@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Transfer Learning - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">Transfer Learning</span>
+</div>
+<div class="container">
+
+<h1>Transfer Learning</h1>
+<p class="subtitle">Leverage knowledge from pre-trained models instead of training from scratch. Fine-tune massive models for your specific task.</p>
+
+<h2>What is Transfer Learning?</h2>
+<p>Transfer learning takes a model trained on a large dataset (like ImageNet with 14 million images) and adapts it for a different but related task. Instead of learning from scratch, you start with learned features and fine-tune for your specific problem. This dramatically reduces training time and data requirements.</p>
+
+<div class="highlight"><p>A model trained on ImageNet already knows edges, textures, shapes, and objects. You just teach it the last step — your specific classification task.</p></div>
+
+<h2>Why Transfer Learning Works</h2>
+<div class="formula">Layer 1-3: Universal features (edges, corners, textures)     ← Keep frozen
+Layer 4-6: Mid-level features (patterns, parts, shapes)       ← Optionally fine-tune
+Layer 7+:  Task-specific features (faces, cars, diseases)      ← Replace and retrain</div>
+<p>Early layers learn generic features useful across all image tasks. Only the deeper layers learn task-specific patterns. This is why you can reuse most of the network.</p>
+
+<h2>Two Strategies</h2>
+<div class="grid">
+<div class="grid-item">
+<h4>Feature Extraction</h4>
+<p>Freeze the entire pre-trained model. Remove the last classification layer and add your own. Only train the new layer. Fast and works with small datasets.</p>
+</div>
+<div class="grid-item">
+<h4>Fine-Tuning</h4>
+<p>Unfreeze some or all pre-trained layers and retrain with a very low learning rate. Better accuracy but needs more data and compute.</p>
+</div>
+</div>
+
+<h2>Popular Pre-Trained Models</h2>
+<table>
+<tr><th>Model</th><th>Params</th><th>Top-5 Accuracy</th><th>Best For</th></tr>
+<tr><td><strong>VGG16/19</strong></td><td>138M / 144M</td><td>92.7%</td><td>Simple, easy to understand</td></tr>
+<tr><td><strong>ResNet50/101</strong></td><td>25M / 44M</td><td>93.3%</td><td>Deeper without vanishing gradients</td></tr>
+<tr><td><strong>InceptionV3</strong></td><td>24M</td><td>93.7%</td><td>Multi-scale feature extraction</td></tr>
+<tr><td><strong>MobileNetV2</strong></td><td>3.4M</td><td>90.1%</td><td>Mobile/edge deployment (lightweight)</td></tr>
+<tr><td><strong>EfficientNet</strong></td><td>5-66M</td><td>97.1%</td><td>Best accuracy-efficiency tradeoff</td></tr>
+</table>
+
+<h2>Code: Feature Extraction</h2>
+<div class="code">import tensorflow as tf
+from tensorflow.keras import layers, Model
+from tensorflow.keras.applications import ResNet50
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+# Load pre-trained ResNet50 (without the top classification layer)
+base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
+
+# Freeze all layers
+base_model.trainable = False
+
+# Add custom classification head
+model = tf.keras.Sequential([
+    base_model,
+    layers.GlobalAveragePooling2D(),
+    layers.Dense(256, activation='relu'),
+    layers.Dropout(0.5),
+    layers.Dense(5, activation='softmax')  # 5 classes
+])
+
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+model.summary()
+
+# Train only the new layers (base_model is frozen)
+# model.fit(train_data, epochs=10)</div>
+
+<h2>Code: Fine-Tuning</h2>
+<div class="code"># After feature extraction training, unfreeze top layers for fine-tuning
+base_model.trainable = True
+
+# Freeze all layers except the last 20
+for layer in base_model.layers[:-20]:
+    layer.trainable = False
+
+# Recompile with a VERY low learning rate (important!)
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=1e-5),  # 10x-100x smaller
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+# Continue training with fine-tuning
+# model.fit(train_data, epochs=5)</div>
+
+<h2>When to Use Which Strategy</h2>
+<table>
+<tr><th>Scenario</th><th>Strategy</th><th>Why</th></tr>
+<tr><td>Small dataset, similar to ImageNet</td><td>Feature Extraction</td><td>Enough shared features, avoid overfitting</td></tr>
+<tr><td>Large dataset, similar to ImageNet</td><td>Fine-Tune top layers</td><td>Enough data to adapt features</td></tr>
+<tr><td>Small dataset, different from ImageNet</td><td>Feature Extract from earlier layers</td><td>Later features too specific</td></tr>
+<tr><td>Large dataset, very different</td><td>Fine-Tune entire model</td><td>Enough data to learn new features</td></tr>
+</table>
+
+<h2>Transfer Learning for NLP</h2>
+<p>The same concept applies to text. Pre-trained language models have learned grammar, facts, and reasoning from billions of words:</p>
+<ul>
+<li><strong>BERT</strong> — Bidirectional, great for classification, NER, QA</li>
+<li><strong>GPT</strong> — Autoregressive, great for text generation</li>
+<li><strong>RoBERTa</strong> — Optimized BERT training procedure</li>
+<li><strong>T5</strong> — Text-to-text framework, converts all tasks to text</li>
+</ul>
+
+<div class="warning"><p>Always use a low learning rate (1e-5 to 1e-4) when fine-tuning. High learning rates destroy the pre-trained features — this is called "catastrophic forgetting".</p></div>
+
+</div>
+</body>
+</html>

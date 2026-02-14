@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Hyperparameter Tuning - ML Playground</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}.top-bar a:hover{color:#f1f5f9}.top-bar .sep{color:#334155}.top-bar .current{color:#60a5fa}.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}p{margin-bottom:14px;font-size:15px;color:#334155}ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}li{margin-bottom:6px}.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}.highlight p{margin:0;color:#1e40af;font-size:14px}.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}.warning p{margin:0;color:#92400e;font-size:14px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}.grid-item p{font-size:13px;margin:0}.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}.pros{color:#059669}.cons{color:#dc2626}table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}td{padding:10px 14px;border:1px solid #e2e8f0}@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">Hyperparameter Tuning</span>
+
+<a href="https://github.com/Jacobgokul/ML-Playground/blob/main/machine_learning/supervised/hyperparameter_tunning.ipynb" target="_blank" style="color:#94a3b8;text-decoration:none;font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px;margin-left:auto;transition:.15s" onmouseover="this.style.color='#f1f5f9'" onmouseout="this.style.color='#94a3b8'"><svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg> View Notebook</a>
+</div>
+<div class="container">
+
+<h1>Hyperparameter Tuning</h1>
+<p class="subtitle">Finding the best settings for your ML model using systematic search methods.</p>
+
+<h2>What are Hyperparameters?</h2>
+<p>Hyperparameters are settings you choose <strong>before</strong> training a model. They control how the model learns, but are not learned from data. Getting them right can dramatically improve model performance.</p>
+
+<div class="grid">
+<div class="grid-item">
+<h4>Parameters (Learned)</h4>
+<p>Learned from data during training. Examples: coefficients in Linear Regression, weights in Neural Networks.</p>
+</div>
+<div class="grid-item">
+<h4>Hyperparameters (Set by You)</h4>
+<p>Set before training. Examples: K in KNN, max_depth in Decision Trees, C in SVM, learning_rate in boosting.</p>
+</div>
+</div>
+
+<div class="highlight"><p>Default hyperparameters rarely give the best performance. Tuning them properly can be the difference between a mediocre model and a great one.</p></div>
+
+<h2>Tuning Methods</h2>
+
+<h3>1. Manual Tuning</h3>
+<p>Try different values by hand and compare results. Quick for simple models but tedious for many parameters.</p>
+<div class="code">from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+# Try different max_depth values manually
+for depth in [1, 2, 3, 5, 10, None]:
+    model = DecisionTreeClassifier(max_depth=depth, random_state=42)
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    print(f"max_depth={depth}, Accuracy={accuracy_score(y_test, y_pred):.2f}")</div>
+
+<h3>2. Grid Search (GridSearchCV)</h3>
+<p>Tries <strong>every possible combination</strong> of hyperparameters in a defined grid. Exhaustive but slow.</p>
+<div class="code">from sklearn.model_selection import GridSearchCV
+from sklearn.tree import DecisionTreeClassifier
+
+param_grid = {
+    "max_depth": [1, 2, 3, None],
+    "min_samples_split": [2, 3, 4],
+    "random_state": [42, 100]
+}
+
+# GridSearch with 3-fold cross-validation
+grid = GridSearchCV(DecisionTreeClassifier(), param_grid, cv=3)
+grid.fit(X_train, y_train)
+
+print("Best Params:", grid.best_params_)
+print("Best Score:", grid.best_score_)</div>
+
+<div class="warning"><p>Grid Search tests all combinations. With max_depth=[1,2,3,None], min_samples_split=[2,3,4], and random_state=[42,100], that is 4 x 3 x 2 = 24 models trained, each with 3-fold CV = 72 total fits.</p></div>
+
+<h3>3. Random Search (RandomizedSearchCV)</h3>
+<p>Tries <strong>random subsets</strong> of combinations instead of all. Much faster for large search spaces with similar quality results.</p>
+<div class="code">from sklearn.model_selection import RandomizedSearchCV
+
+param_dist = {
+    "max_depth": [1, 2, 3, None],
+    "min_samples_split": [2, 3, 4, 5, 6]
+}
+
+random_search = RandomizedSearchCV(
+    DecisionTreeClassifier(random_state=42),
+    param_distributions=param_dist,
+    n_iter=5,   # only try 5 random combinations
+    cv=3,
+    random_state=42
+)
+random_search.fit(X_train, y_train)
+
+print("Best Params:", random_search.best_params_)
+print("Best Score:", random_search.best_score_)</div>
+
+<h3>4. Bayesian Optimization</h3>
+<p>Uses probability to <strong>intelligently guess</strong> which hyperparameter regions will perform best, then focuses the search there. The most efficient method for expensive models.</p>
+<div class="code">import optuna
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+def objective(trial):
+    max_depth = trial.suggest_categorical("max_depth", [1, 2, 3, None])
+    min_samples_split = trial.suggest_int("min_samples_split", 2, 6)
+
+    model = DecisionTreeClassifier(
+        max_depth=max_depth,
+        min_samples_split=min_samples_split,
+        random_state=42
+    )
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    return accuracy_score(y_test, y_pred)
+
+# Run optimization
+study = optuna.create_study(direction="maximize")
+study.optimize(objective, n_trials=10)
+
+print("Best Params:", study.best_params)
+print("Best Score:", study.best_value)</div>
+
+<h2>Comparison of Methods</h2>
+<table>
+<tr><th>Method</th><th>Speed</th><th>Coverage</th><th>Best For</th></tr>
+<tr><td>Manual</td><td>Fast (few combos)</td><td>Low</td><td>Quick experiments, simple models</td></tr>
+<tr><td>Grid Search</td><td>Slow</td><td>Complete</td><td>Small search space, need exact best</td></tr>
+<tr><td>Random Search</td><td>Fast</td><td>Partial</td><td>Large search space, good-enough results</td></tr>
+<tr><td>Bayesian (Optuna)</td><td>Efficient</td><td>Smart</td><td>Expensive models, deep learning</td></tr>
+</table>
+
+<div class="card">
+<div class="card-title">Setup Code for Examples Above</div>
+<p>All examples above use this dataset:</p>
+</div>
+
+<div class="code">import pandas as pd
+from sklearn.model_selection import train_test_split
+
+data = {
+    "Age": [22, 25, 30, 35, 40, 50, 55],
+    "Income_LPA": [8, 10, 15, 12, 25, 20, 35],
+    "Buys_House": [0, 0, 0, 1, 1, 0, 1]
+}
+df = pd.DataFrame(data)
+
+X = df[["Age", "Income_LPA"]]
+y = df["Buys_House"]
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)</div>
+
+<p><span class="tag">Hyperparameters</span> <span class="tag">Grid Search</span> <span class="tag">Random Search</span> <span class="tag">Bayesian</span> <span class="tag">Optuna</span></p>
+</div>
+</body>
+</html>

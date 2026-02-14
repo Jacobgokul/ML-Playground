@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Playground</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{
+            --sidebar:#0f172a;--sidebar-hover:#1e293b;--sidebar-active:#334155;
+            --accent:#3b82f6;--accent-light:#60a5fa;
+            --bg:#f8fafc;--card:#fff;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;
+            --c-sup:#3b82f6;--c-unsup:#8b5cf6;--c-rl:#f59e0b;--c-dl:#10b981;--c-adv:#ef4444;--c-pre:#06b6d4;--c-intro:#64748b;
+        }
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+
+        /* SIDEBAR */
+        .sidebar{position:fixed;top:0;left:0;width:270px;height:100vh;background:var(--sidebar);overflow-y:auto;z-index:100;transition:transform .3s}
+        .sidebar-hdr{padding:24px 20px;border-bottom:1px solid #1e293b}
+        .sidebar-hdr h1{color:#f1f5f9;font-size:20px;font-weight:700}
+        .sidebar-hdr p{color:#94a3b8;font-size:12px;margin-top:4px}
+        .nav-sec{padding:0 12px;margin-bottom:2px}
+        .nav-sec-title{color:#94a3b8;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;padding:14px 12px 6px}
+        .nav-link{display:flex;align-items:center;gap:10px;padding:6px 12px;color:#cbd5e1;text-decoration:none;font-size:13px;border-radius:6px;transition:.15s}
+        .nav-link:hover{background:var(--sidebar-hover);color:#f1f5f9}
+        .nav-link.active{background:var(--sidebar-active);color:#fff}
+        .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+        .sidebar::-webkit-scrollbar{width:4px}
+        .sidebar::-webkit-scrollbar-thumb{background:#334155;border-radius:4px}
+
+        /* MAIN */
+        .main{margin-left:270px;min-height:100vh}
+
+        /* HERO */
+        .hero{background:linear-gradient(135deg,#0f172a,#1e293b 50%,#0f172a);padding:70px 60px;color:#fff;position:relative;overflow:hidden}
+        .hero::before{content:'';position:absolute;top:-50%;right:-20%;width:600px;height:600px;background:radial-gradient(circle,rgba(59,130,246,.15),transparent 70%);border-radius:50%}
+        .hero h1{font-size:40px;font-weight:800;letter-spacing:-1.5px;position:relative}
+        .hero h1 span{color:var(--accent-light)}
+        .hero>p{font-size:17px;color:#94a3b8;max-width:620px;margin-top:14px;position:relative}
+        .hero-stats{display:flex;gap:40px;margin-top:36px;position:relative}
+        .stat-num{font-size:30px;font-weight:800;color:var(--accent-light)}
+        .stat-lbl{font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+        .hero-links{display:flex;gap:12px;margin-top:28px;position:relative}
+        .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;transition:.2s}
+        .btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:#2563eb}
+        .btn-s{background:rgba(255,255,255,.1);color:#e2e8f0;border:1px solid rgba(255,255,255,.15)}.btn-s:hover{background:rgba(255,255,255,.15)}
+
+        /* CONTENT */
+        .content{padding:40px 60px 80px;max-width:1100px}
+
+        /* ROADMAP */
+        .roadmap{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px 32px;margin-bottom:48px}
+        .roadmap h3{font-size:17px;font-weight:700;margin-bottom:16px}
+        .rm-flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+        .rm-step{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;white-space:nowrap}
+        .rm-arr{color:#cbd5e1;font-size:18px}
+
+        /* SECTION */
+        .section{margin-bottom:56px;scroll-margin-top:24px}
+        .sec-hdr{display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:2px solid var(--border)}
+        .sec-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+        .sec-hdr h2{font-size:22px;font-weight:700;letter-spacing:-.3px}
+        .sec-desc{color:var(--muted);font-size:14px;margin-bottom:20px;max-width:720px}
+
+        /* CARDS */
+        .cards{display:flex;flex-direction:column;gap:14px}
+        .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 26px;border-left:4px solid transparent;transition:.2s;text-decoration:none;color:inherit;display:block;cursor:pointer}
+        .card:hover{box-shadow:0 4px 16px rgba(0,0,0,.06);transform:translateY(-1px)}
+        .card-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+        .card-title{font-size:16px;font-weight:700;letter-spacing:-.2px}
+        .card-badge{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:700;background:var(--accent);color:#fff;flex-shrink:0;text-transform:uppercase;letter-spacing:.5px}
+        .card-desc{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:12px}
+        .tags{display:flex;flex-wrap:wrap;gap:5px}
+        .tag{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569}
+        .card-meta{display:flex;gap:16px;margin-top:12px;padding-top:10px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+
+        /* COLORS */
+        .bl-intro{border-left-color:var(--c-intro)}.bl-pre{border-left-color:var(--c-pre)}.bl-sup{border-left-color:var(--c-sup)}.bl-unsup{border-left-color:var(--c-unsup)}.bl-rl{border-left-color:var(--c-rl)}.bl-dl{border-left-color:var(--c-dl)}.bl-adv{border-left-color:var(--c-adv)}
+        .ic-intro{background:#f1f5f9;color:var(--c-intro)}.ic-pre{background:#ecfeff;color:var(--c-pre)}.ic-sup{background:#eff6ff;color:var(--c-sup)}.ic-unsup{background:#f5f3ff;color:var(--c-unsup)}.ic-rl{background:#fffbeb;color:var(--c-rl)}.ic-dl{background:#ecfdf5;color:var(--c-dl)}.ic-adv{background:#fef2f2;color:var(--c-adv)}
+
+        /* COMING SOON */
+        .cs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+        .cs-card{background:var(--card);border:1px dashed #cbd5e1;border-radius:12px;padding:18px 22px;opacity:.85}
+        .cs-card:hover{opacity:1;border-color:#94a3b8}
+        .cs-title{font-size:14px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+        .cs-badge{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:#fef3c7;color:#92400e;text-transform:uppercase;letter-spacing:.5px}
+        .cs-desc{font-size:12px;color:var(--muted);line-height:1.5}
+        .cs-cat{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+
+        /* FOOTER */
+        .footer{text-align:center;padding:28px 24px;color:var(--muted);font-size:13px;border-top:1px solid var(--border)}
+        .footer a{color:var(--accent);text-decoration:none}.footer a:hover{text-decoration:underline}
+
+        /* MOBILE */
+        .menu-btn{display:none;position:fixed;top:14px;left:14px;z-index:200;width:42px;height:42px;border-radius:10px;background:var(--sidebar);color:#fff;border:none;font-size:20px;cursor:pointer;align-items:center;justify-content:center}
+        .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50}
+        @media(max-width:900px){
+            .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
+            .main{margin-left:0}.hero{padding:50px 20px}.hero h1{font-size:26px}.content{padding:20px 16px 60px}
+            .menu-btn{display:flex}.overlay.open{display:block}
+            .card-hdr{flex-direction:column;gap:8px}
+            .rm-flow{flex-direction:column;align-items:flex-start}.rm-arr{transform:rotate(90deg)}
+            .hero-stats{gap:20px;flex-wrap:wrap}.hero-links{flex-direction:column}
+        }
+    </style>
+</head>
+<body>
+
+<button class="menu-btn" onclick="toggleSidebar()">&#9776;</button>
+<div class="overlay" onclick="toggleSidebar()"></div>
+
+<nav class="sidebar">
+    <div class="sidebar-hdr">
+        <h1>ML Playground</h1>
+        <p>30 Notebooks &middot; Learn by Doing</p>
+        <p style="color:#64748b;font-size:11px;margin-top:4px">Author: <a href="https://github.com/Jacobgokul" target="_blank" style="color:#60a5fa;text-decoration:none">Gokul</a></p>
+    </div>
+    <div style="padding:12px 0">
+        <div class="nav-sec">
+            <div class="nav-sec-title">Getting Started</div>
+            <a href="#intro" class="nav-link"><span class="dot" style="background:var(--c-intro)"></span>Introduction to ML</a>
+            <a href="#preprocessing" class="nav-link"><span class="dot" style="background:var(--c-pre)"></span>Data Preprocessing</a>
+        </div>
+        <div class="nav-sec">
+            <div class="nav-sec-title">Supervised Learning</div>
+            <a href="#linear-regression" class="nav-link"><span class="dot" style="background:var(--c-sup)"></span>Linear Regression</a>
+            <a href="#logistic-regression" class="nav-link"><span class="dot" style="background:var(--c-sup)"></span>Logistic Regression</a>
+            <a href="#decision-tree" class="nav-link"><span class="dot" style="background:var(--c-sup)"></span>Decision Tree</a>
+            <a href="#knn" class="nav-link"><span class="dot" style="background:var(--c-sup)"></span>K-Nearest Neighbors</a>
+            <a href="#random-forest" class="nav-link"><span class="dot" style="background:var(--c-sup)"></span>Random Forest</a>
+            <a href="#svm" class="nav-link"><span class="dot" style="background:var(--c-sup)"></span>SVM / SVR</a>
+            <a href="#gradient-boosting" class="nav-link"><span class="dot" style="background:var(--c-sup)"></span>Gradient Boosting</a>
+            <a href="#xgboost" class="nav-link"><span class="dot" style="background:var(--c-sup)"></span>XGBoost</a>
+            <a href="#hyperparameter" class="nav-link"><span class="dot" style="background:var(--c-sup)"></span>Hyperparameter Tuning</a>
+            <a href="#evaluation" class="nav-link"><span class="dot" style="background:var(--c-sup)"></span>Evaluation Metrics</a>
+            <a href="#naive-bayes" class="nav-link"><span class="dot" style="background:var(--c-sup)"></span>Naive Bayes</a>
+            <a href="#cross-validation" class="nav-link"><span class="dot" style="background:var(--c-sup)"></span>Cross-Validation</a>
+            <a href="#feature-selection" class="nav-link"><span class="dot" style="background:var(--c-sup)"></span>Feature Selection</a>
+            <a href="#arima-prophet" class="nav-link"><span class="dot" style="background:var(--c-sup)"></span>ARIMA &amp; Prophet</a>
+        </div>
+        <div class="nav-sec">
+            <div class="nav-sec-title">Unsupervised Learning</div>
+            <a href="#kmeans" class="nav-link"><span class="dot" style="background:var(--c-unsup)"></span>K-Means</a>
+            <a href="#hierarchical" class="nav-link"><span class="dot" style="background:var(--c-unsup)"></span>Hierarchical</a>
+            <a href="#dbscan" class="nav-link"><span class="dot" style="background:var(--c-unsup)"></span>DBSCAN</a>
+            <a href="#gmm" class="nav-link"><span class="dot" style="background:var(--c-unsup)"></span>Gaussian Mixture</a>
+            <a href="#meanshift" class="nav-link"><span class="dot" style="background:var(--c-unsup)"></span>Mean Shift</a>
+            <a href="#pca" class="nav-link"><span class="dot" style="background:var(--c-unsup)"></span>PCA</a>
+            <a href="#association" class="nav-link"><span class="dot" style="background:var(--c-unsup)"></span>Association Rules</a>
+            <a href="#isolation-forest" class="nav-link"><span class="dot" style="background:var(--c-unsup)"></span>Isolation Forest</a>
+            <a href="#recsys" class="nav-link"><span class="dot" style="background:var(--c-unsup)"></span>Recommendations</a>
+        </div>
+        <div class="nav-sec">
+            <div class="nav-sec-title">Reinforcement Learning</div>
+            <a href="#rl-intro" class="nav-link"><span class="dot" style="background:var(--c-rl)"></span>RL Introduction</a>
+            <a href="#qlearning" class="nav-link"><span class="dot" style="background:var(--c-rl)"></span>Q-Learning</a>
+            <a href="#dqn" class="nav-link"><span class="dot" style="background:var(--c-rl)"></span>Deep Q-Network</a>
+        </div>
+        <div class="nav-sec">
+            <div class="nav-sec-title">Deep Learning</div>
+            <a href="#dl-overview" class="nav-link"><span class="dot" style="background:var(--c-dl)"></span>DL Overview</a>
+            <a href="#ann" class="nav-link"><span class="dot" style="background:var(--c-dl)"></span>Neural Networks</a>
+            <a href="#cnn" class="nav-link"><span class="dot" style="background:var(--c-dl)"></span>CNN</a>
+            <a href="#rnn" class="nav-link"><span class="dot" style="background:var(--c-dl)"></span>RNN</a>
+            <a href="#lstm" class="nav-link"><span class="dot" style="background:var(--c-dl)"></span>LSTM</a>
+            <a href="#lstm-ts" class="nav-link"><span class="dot" style="background:var(--c-dl)"></span>LSTM Time Series</a>
+            <a href="#mlp" class="nav-link"><span class="dot" style="background:var(--c-dl)"></span>MLP</a>
+            <a href="#gans" class="nav-link"><span class="dot" style="background:var(--c-dl)"></span>GANs</a>
+            <a href="#autoencoders" class="nav-link"><span class="dot" style="background:var(--c-dl)"></span>Autoencoders</a>
+            <a href="#transfer-learning" class="nav-link"><span class="dot" style="background:var(--c-dl)"></span>Transfer Learning</a>
+            <a href="#transformers" class="nav-link"><span class="dot" style="background:var(--c-dl)"></span>Transformers</a>
+            <a href="#regularization" class="nav-link"><span class="dot" style="background:var(--c-dl)"></span>Regularization</a>
+        </div>
+        <div class="nav-sec">
+            <div class="nav-sec-title">Advanced Topics</div>
+            <a href="#nlp" class="nav-link"><span class="dot" style="background:var(--c-adv)"></span>NLP</a>
+            <a href="#prompt-eng" class="nav-link"><span class="dot" style="background:var(--c-adv)"></span>Prompt Engineering</a>
+            <a href="#bert-gpt" class="nav-link"><span class="dot" style="background:var(--c-adv)"></span>BERT/GPT Fine-Tuning</a>
+            <a href="#deployment" class="nav-link"><span class="dot" style="background:var(--c-adv)"></span>Model Deployment</a>
+        </div>
+    </div>
+</nav>
+
+<div class="main">
+
+    <section class="hero">
+        <h1>ML <span>Playground</span></h1>
+        <p>A hands-on journey through Machine Learning, Deep Learning, NLP, and Prompt Engineering. 30 interactive notebooks you can read right here as web pages.</p>
+        <p style="font-size:14px;color:#94a3b8;margin-top:8px;position:relative">Author: <a href="https://github.com/Jacobgokul" target="_blank" style="color:#60a5fa;font-weight:600;text-decoration:none">Gokul</a></p>
+        <div class="hero-stats">
+            <div><div class="stat-num">30</div><div class="stat-lbl">Notebooks</div></div>
+            <div><div class="stat-num">7</div><div class="stat-lbl">Categories</div></div>
+            <div><div class="stat-num">20+</div><div class="stat-lbl">Algorithms</div></div>
+            <div><div class="stat-num">44</div><div class="stat-lbl">Total Topics</div></div>
+        </div>
+        <div class="hero-links">
+            <a href="https://github.com/Jacobgokul/ML-Playground" target="_blank" class="btn btn-p">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                GitHub
+            </a>
+            <a href="#intro" class="btn btn-s">Start Learning</a>
+        </div>
+    </section>
+
+    <div class="content">
+
+        <div class="roadmap">
+            <h3>Learning Path</h3>
+            <div class="rm-flow">
+                <span class="rm-step ic-intro">Intro</span><span class="rm-arr">&rarr;</span>
+                <span class="rm-step ic-pre">Preprocessing</span><span class="rm-arr">&rarr;</span>
+                <span class="rm-step ic-sup">Supervised</span><span class="rm-arr">&rarr;</span>
+                <span class="rm-step ic-unsup">Unsupervised</span><span class="rm-arr">&rarr;</span>
+                <span class="rm-step ic-rl">Reinforcement</span><span class="rm-arr">&rarr;</span>
+                <span class="rm-step ic-dl">Deep Learning</span><span class="rm-arr">&rarr;</span>
+                <span class="rm-step ic-adv">NLP &amp; Prompts</span>
+            </div>
+        </div>
+
+        <!-- ===== INTRODUCTION ===== -->
+        <div class="section" id="intro">
+            <div class="sec-hdr"><div class="sec-icon ic-intro">&#128218;</div><h2>Introduction to ML</h2></div>
+            <p class="sec-desc">Foundational concepts. Understand supervised, unsupervised, and reinforcement learning before diving into algorithms.</p>
+            <div class="cards">
+                <a href="notebooks/intro/intro_to_machine_learning.html" class="card bl-intro" id="intro-ml">
+                    <div class="card-hdr"><div class="card-title">Introduction to Machine Learning</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Overview of the ML landscape. Three main types, regression vs classification, ensemble learning (bagging &amp; boosting).</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">When to Use What</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Regression</span> Predict a number (price, temperature)</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Classification</span> Predict a category (spam / not spam)</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Clustering</span> Find groups in unlabeled data</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Dimensionality Reduction</span> Reduce features for visualization</div>
+                            <div><span class="tag" style="background:#fffbeb;color:#f59e0b">Reinforcement Learning</span> Train an agent (game, robot)</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Bagging (Random Forest)</span> High-variance model (overfitting)</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Boosting (XGBoost)</span> High-bias model (underfitting)</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== PREPROCESSING ===== -->
+        <div class="section" id="preprocessing">
+            <div class="sec-hdr"><div class="sec-icon ic-pre">&#9881;</div><h2>Data Preprocessing</h2></div>
+            <p class="sec-desc">Clean data, handle missing values, encode categories, and engineer features before any model.</p>
+            <div class="cards">
+                <a href="notebooks/preprocessing/data_preprocessing.html" class="card bl-pre">
+                    <div class="card-hdr"><div class="card-title">Data Preprocessing &amp; Feature Engineering</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Titanic dataset. Missing data imputation, feature scaling (normalization/standardization), label &amp; one-hot encoding, custom feature engineering.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Techniques</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#ecfeff;color:#06b6d4">Missing Data Imputation</span> Fill gaps with mean, median, or mode to prevent algorithm breakage</div>
+                            <div><span class="tag" style="background:#ecfeff;color:#06b6d4">Label Encoding</span> Map categories to numbers for ordered or binary features</div>
+                            <div><span class="tag" style="background:#ecfeff;color:#06b6d4">One-Hot Encoding</span> Create binary columns for unordered categorical features</div>
+                            <div><span class="tag" style="background:#ecfeff;color:#06b6d4">Min-Max Scaling</span> Scale values to [0,1] range to prevent feature dominance</div>
+                            <div><span class="tag" style="background:#ecfeff;color:#06b6d4">Standardization</span> Normalize to mean=0, std=1 for scale-sensitive algorithms</div>
+                            <div><span class="tag" style="background:#ecfeff;color:#06b6d4">Feature Engineering</span> Create new features from existing data to boost model performance</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>Dataset: Titanic (891 samples)</span><span>pandas, sklearn</span></div>
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== SUPERVISED ===== -->
+        <div class="section" id="supervised">
+            <div class="sec-hdr"><div class="sec-icon ic-sup">&#127919;</div><h2>Supervised Learning</h2></div>
+            <p class="sec-desc">Learn from labeled data. Map inputs to known outputs &mdash; predicting prices, classifying spam, and more.</p>
+            <div class="cards">
+
+                <a href="notebooks/supervised/linear_regression.html" class="card bl-sup" id="linear-regression">
+                    <div class="card-hdr"><div class="card-title">Linear Regression</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Fit a straight line to predict house prices. y = &beta;&#8320; + &beta;&#8321;x. Train-test split, MSE, R&sup2; evaluation, regression line visualization.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Simple Linear Regression</span> Fit a line in 2D space for single-feature continuous prediction</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Multiple Linear Regression</span> Fit a hyperplane with multiple features</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Ordinary Least Squares</span> Minimize squared differences between actual and predicted</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Gradient Descent</span> Iteratively adjust coefficients to minimize error</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">MSE &amp; R&sup2;</span> Evaluate prediction error and variance explained</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>House Prices (10 samples)</span><span>sklearn</span></div>
+                </a>
+
+                <a href="notebooks/supervised/logistic_regression.html" class="card bl-sup" id="logistic-regression">
+                    <div class="card-hdr"><div class="card-title">Logistic Regression</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Classification using the sigmoid function. Binary &amp; multi-class with one-vs-rest. Decision boundaries and log-odds transform.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Sigmoid Function</span> Transform linear output to [0,1] probability for classification</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Log Loss Optimization</span> Minimize cross-entropy loss for optimal classification</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Feature Scaling</span> Essential to ensure convergence and unbiased coefficients</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Probability Thresholding</span> Convert probabilities to class labels using 0.5 threshold</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Decision Boundary</span> Line separating classes in feature space</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="notebooks/supervised/decision_tree.html" class="card bl-sup" id="decision-tree">
+                    <div class="card-hdr"><div class="card-title">Decision Tree</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Tree-shaped model splitting by questions. Gini impurity, Entropy, MSE criteria. Tree depth control with visual plot_tree diagram.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Classification Tree</span> Interpretable decisions through recursive feature-based splits</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Regression Tree</span> Predict continuous values using tree structure with leaf values</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Gini Impurity</span> Measure split quality by misclassification probability</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Entropy / Information Gain</span> Measure disorder to identify optimal splits</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Max Depth Regulation</span> Limit tree depth to prevent overfitting</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>Age &amp; Income (7 samples)</span><span>sklearn</span></div>
+                </a>
+
+                <a href="notebooks/supervised/knn.html" class="card bl-sup" id="knn">
+                    <div class="card-hdr"><div class="card-title">K-Nearest Neighbors (KNN)</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Classify by majority vote of K closest neighbors. Euclidean distance, why feature scaling is critical. Interactive new predictions.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">K-Nearest Neighbors</span> Classify based on majority vote of K closest training points</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Euclidean Distance</span> Calculate distances to identify nearest neighbors</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Feature Scaling</span> Critical for distance-based algorithms to prevent feature dominance</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">K Selection</span> Start with K=sqrt(n), use odd values for binary to prevent ties</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Weighted KNN</span> Give closer neighbors more influence in predictions</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>n_neighbors=2</span><span>sklearn</span></div>
+                </a>
+
+                <a href="notebooks/supervised/random_forest.html" class="card bl-sup" id="random-forest">
+                    <div class="card-hdr"><div class="card-title">Random Forest</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Ensemble of decision trees with bagging. Basic regression + extended with categorical encoding. Feature importance. R&sup2; = 0.96.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Bagging</span> Train trees on random data subsets with replacement for diversity</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Random Feature Selection</span> Consider random features per split to reduce tree correlation</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Classification</span> Majority voting across ensemble for robust predictions</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Regression</span> Average predictions across ensemble for robust continuous values</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Feature Importance</span> Rank features by contribution to reduce variance</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>R&sup2;=0.96</span><span>sklearn</span></div>
+                </a>
+
+                <a href="notebooks/supervised/svm.html" class="card bl-sup" id="svm">
+                    <div class="card-hdr"><div class="card-title">Support Vector Machine (SVM / SVR)</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Maximize margin between classes. Kernel trick (RBF), support vectors, &epsilon;-insensitive tube for regression. Apartment rent prediction.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Margin Maximization</span> Find optimal hyperplane that maximizes gap between classes</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Support Vectors</span> Closest data points to boundary that define the hyperplane</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Linear Kernel</span> Use for linearly separable data (fastest option)</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">RBF Kernel</span> Map to infinite dimensions for non-linear separation</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">SVR (Regression)</span> Fit hyperplane within epsilon-tube for regression tolerance</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>Apartments (7 samples)</span><span>sklearn</span></div>
+                </a>
+
+                <a href="notebooks/supervised/gradient_boosting.html" class="card bl-sup" id="gradient-boosting">
+                    <div class="card-hdr"><div class="card-title">Gradient Boosting</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">End-to-end SMS spam detection. NLTK tokenization, stopword removal, TF-IDF vectorization, GradientBoostingClassifier. 97% accuracy.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Sequential Boosting</span> Train trees one after another, each correcting previous errors</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Residual Learning</span> New trees predict errors of the combined previous predictions</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Learning Rate Shrinkage</span> Scale each tree's contribution to prevent overfitting</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Weak Base Learners</span> Use shallow trees to benefit from the boosting effect</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Early Stopping</span> Stop training when validation performance plateaus</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>SMS Spam (5,572 samples)</span><span>97% Accuracy</span></div>
+                </a>
+
+                <a href="notebooks/supervised/xgboost_algo.html" class="card bl-sup" id="xgboost">
+                    <div class="card-hdr"><div class="card-title">XGBoost</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Extreme Gradient Boosting with L1 (Lasso) vs L2 (Ridge) regularization. Visualizes how regularization affects weights. Parallelization.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">XGBoost</span> Optimized gradient boosting with regularization and parallelization</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">L1 Regularization (Lasso)</span> Penalize absolute weights for automatic feature elimination</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">L2 Regularization (Ridge)</span> Penalize squared weights to smoothly shrink without zeroing</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Missing Value Handling</span> Learns optimal direction for missing data automatically</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Sparse Data Efficiency</span> Efficiently handles sparse matrices like TF-IDF</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>House Prices</span><span>xgboost</span></div>
+                </a>
+
+                <a href="notebooks/supervised/hyperparameter_tunning.html" class="card bl-sup" id="hyperparameter">
+                    <div class="card-hdr"><div class="card-title">Hyperparameter Tuning</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Three approaches compared: GridSearchCV (exhaustive), RandomizedSearchCV (sampling), Bayesian Optimization with Optuna (intelligent).</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Grid Search</span> Test every hyperparameter combination (slow but guarantees best)</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Random Search</span> Sample random combinations efficiently (faster, comparable results)</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Bayesian Optimization</span> Intelligently search using probability to focus on promising regions</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Cross-Validation</span> Use multiple folds within tuning for robust estimates</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>Decision Tree params</span><span>sklearn, optuna</span></div>
+                </a>
+
+                <a href="notebooks/supervised/ml_evaluation_metrics.html" class="card bl-sup" id="evaluation">
+                    <div class="card-hdr"><div class="card-title">ML Evaluation Metrics</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Classification: Accuracy, Precision, Recall, F1, Confusion Matrix, ROC-AUC. Regression: MAE, MSE, RMSE, R&sup2;. When to use which.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">When to Use Which</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Accuracy</span> Correct prediction percentage (only reliable on balanced datasets)</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Precision</span> Optimize when false positives are costly (e.g. spam filter)</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Recall</span> Optimize when false negatives are costly (e.g. cancer detection)</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">F1 Score</span> Harmonic mean balancing precision and recall for imbalanced data</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">ROC-AUC</span> Performance across all thresholds (1.0=perfect, 0.5=random)</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">MAE / MSE / RMSE</span> Regression error metrics in original units</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">R&sup2;</span> Fraction of variance explained by the model (0=baseline, 1=perfect)</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="notebooks/supervised/naive_bayes.html" class="card bl-sup" id="naive-bayes">
+                    <div class="card-hdr"><div class="card-title">Naive Bayes</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Probabilistic classifier based on Bayes' theorem. Gaussian, Multinomial, Bernoulli variants. Fast and effective for text, spam detection, sentiment. Laplace smoothing explained.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Bayes' Theorem</span> Calculate posterior probability from likelihood, prior, and evidence</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Gaussian NB</span> Use for continuous features following normal distributions</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Multinomial NB</span> Use for discrete count features like word frequencies in text</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Bernoulli NB</span> Use for binary feature presence/absence</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Laplace Smoothing</span> Add pseudocounts to prevent zero probabilities for unseen features</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="notebooks/supervised/cross_validation.html" class="card bl-sup" id="cross-validation">
+                    <div class="card-hdr"><div class="card-title">Cross-Validation</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">K-Fold, Stratified K-Fold, Leave-One-Out, Time Series Split. Get reliable performance estimates instead of one lucky train-test split.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">K-Fold CV</span> Split data into K folds, train K times with rotating test sets</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Stratified K-Fold</span> Maintain class distribution in each fold (essential for imbalanced data)</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Leave-One-Out (LOO)</span> Use each single sample as test set (maximum thoroughness)</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Time Series Split</span> Expanding train window for temporal data (preserve causality)</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="notebooks/supervised/feature_selection.html" class="card bl-sup" id="feature-selection">
+                    <div class="card-hdr"><div class="card-title">Feature Selection</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Filter, wrapper, and embedded methods. SelectKBest, RFE, tree importance, Lasso L1. Pick the best features and drop the noise.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Filter Methods (SelectKBest)</span> Score features independently using statistical tests (fast)</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Mutual Information</span> Measure information dependency between features and target</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">RFE (Recursive Elimination)</span> Iteratively remove least important features from model</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Tree-Based Importance</span> Extract importance scores from tree models for ranking</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">L1 Lasso</span> Automatically drives unimportant weights to zero</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="notebooks/supervised/arima_prophet.html" class="card bl-sup" id="arima-prophet">
+                    <div class="card-hdr"><div class="card-title">ARIMA &amp; Prophet</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Classical time series forecasting. ARIMA(p,d,q), stationarity testing, auto_arima. Facebook Prophet with holidays, multiple seasonality, component plots.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">AR (AutoRegressive)</span> Use past values to forecast future values</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">I (Integrated)</span> Difference data to remove trends and achieve stationarity</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">MA (Moving Average)</span> Incorporate past forecast errors for prediction</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">SARIMA</span> Extend ARIMA with seasonal components (P,D,Q,s)</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Auto ARIMA</span> Automatically determine optimal (p,d,q) parameters</div>
+                            <div><span class="tag" style="background:#eff6ff;color:#3b82f6">Facebook Prophet</span> User-friendly forecasting with automatic trend and seasonality</div>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- ===== UNSUPERVISED ===== -->
+        <div class="section" id="unsupervised">
+            <div class="sec-hdr"><div class="sec-icon ic-unsup">&#128301;</div><h2>Unsupervised Learning</h2></div>
+            <p class="sec-desc">Discover hidden patterns in unlabeled data. Clustering, dimensionality reduction, and association rules.</p>
+            <div class="cards">
+
+                <a href="notebooks/unsupervised/k_means_clustering.html" class="card bl-unsup" id="kmeans">
+                    <div class="card-hdr"><div class="card-title">K-Means Clustering</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Centroid-based partitioning. k-means++ init, Elbow method for K, Silhouette score. Iterative assignment &amp; update until convergence.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">K-Means Clustering</span> Partition data into K clusters by minimizing within-cluster variance</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Elbow Method</span> Determine optimal K by plotting inertia vs number of clusters</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Silhouette Score</span> Evaluate cluster quality from -1 to 1</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">k-means++</span> Smarter centroid initialization for better starting positions</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>300 samples, 3 clusters</span><span>sklearn</span></div>
+                </a>
+
+                <a href="notebooks/unsupervised/hierarchical_clustering.html" class="card bl-unsup" id="hierarchical">
+                    <div class="card-hdr"><div class="card-title">Hierarchical Clustering</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Agglomerative (bottom-up) &amp; Divisive (top-down). Linkage methods: Single, Complete, Average, Ward. Dendrogram tree diagrams.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Agglomerative</span> Bottom-up approach starting from individual points and merging</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Divisive</span> Top-down approach starting from one cluster and splitting</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Ward's Linkage</span> Minimizes total within-cluster variance (most popular)</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Dendrogram</span> Tree visualization showing hierarchical cluster structure</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>Age &amp; Income (10 samples)</span><span>scipy, sklearn</span></div>
+                </a>
+
+                <a href="notebooks/unsupervised/dbscan_clustering.html" class="card bl-unsup" id="dbscan">
+                    <div class="card-hdr"><div class="card-title">DBSCAN</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Density-based clustering. No need to specify K. Finds arbitrary shapes, marks outliers as noise (-1). &epsilon; and MinPts parameters.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Core Points</span> Points with at least MinPts neighbors within eps radius</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Border Points</span> Within eps of core points but with fewer than MinPts neighbors</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Epsilon (eps)</span> Radius parameter defining neighborhood size around each point</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Noise Detection</span> Automatically marks outliers that don't belong to any cluster</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="notebooks/unsupervised/gmm_clustering.html" class="card bl-unsup" id="gmm">
+                    <div class="card-hdr"><div class="card-title">Gaussian Mixture Models (GMM)</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Soft probabilistic clustering via EM algorithm. Each point gets a probability per cluster. Gaussian distributions with &mu;, &Sigma;, &pi;.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Soft Clustering</span> Assigns probability of belonging to each cluster (not hard labels)</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">EM Algorithm</span> Iteratively estimates Gaussian parameters to maximize likelihood</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Covariance Types</span> Full, tied, diag, or spherical options for different cluster shapes</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Component Weights</span> Learned proportions of data belonging to each Gaussian</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>300 samples, 3 clusters</span><span>sklearn</span></div>
+                </a>
+
+                <a href="notebooks/unsupervised/mean_shift_clustering.html" class="card bl-unsup" id="meanshift">
+                    <div class="card-hdr"><div class="card-title">Mean Shift Clustering</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Density peak-seeking. Each point shifts towards the mean of nearby points. Auto-discovers cluster count. Bandwidth parameter.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Density Peak Seeking</span> Iteratively shift points toward regions of highest density</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Bandwidth Parameter</span> Controls window size: small = many clusters, large = fewer</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Auto Cluster Detection</span> No need to pre-specify number of clusters</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Arbitrary Shapes</span> Can find non-spherical cluster shapes</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>300 samples, 3 clusters</span><span>sklearn</span></div>
+                </a>
+
+                <a href="notebooks/unsupervised/PCA.html" class="card bl-unsup" id="pca">
+                    <div class="card-hdr"><div class="card-title">Principal Component Analysis (PCA)</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Dimensionality reduction via maximum variance projection. MNIST 64D &rarr; 2D. Eigenvalues, eigenvectors, linear transformation.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">PCA</span> Find axes capturing maximum variance for dimensionality reduction</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Explained Variance Ratio</span> Shows how much information each component captures</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Eigenvalues &amp; Eigenvectors</span> Eigenvectors are principal components, eigenvalues show importance</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Feature Scaling</span> Essential preprocessing to standardize data before PCA</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>MNIST (1,797 samples, 64&rarr;2D)</span><span>sklearn</span></div>
+                </a>
+
+                <a href="notebooks/unsupervised/association_rule_mining_algo.html" class="card bl-unsup" id="association">
+                    <div class="card-hdr"><div class="card-title">Association Rule Mining</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Market basket analysis. Apriori, Eclat, FP-Growth compared. Support, Confidence, Lift metrics. Real-world product bundling.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Apriori</span> Generate frequent itemsets level-by-level using pruning</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">FP-Growth</span> Compressed tree-based method, much faster than Apriori</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Support</span> Frequency of itemset in all transactions</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Confidence</span> How often a rule is correct (antecedent &rarr; consequent)</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Lift</span> Strength of association compared to random chance (&gt;1 is positive)</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>4 transactions</span><span>mlxtend</span></div>
+                </a>
+
+                <a href="notebooks/unsupervised/isolation_forest.html" class="card bl-unsup" id="isolation-forest">
+                    <div class="card-hdr"><div class="card-title">Isolation Forest</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Anomaly detection by random partitioning. Anomalies are isolated with fewer splits. Anomaly scores, contamination parameter. Fraud and intrusion detection.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Isolation Forest</span> Detect anomalies by isolating outliers with random partitions</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Anomaly Score</span> Normalized path length showing how easily a point is isolated</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Random Partitioning</span> Uses feature selection and split values to isolate points</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Contamination</span> Expected proportion of outliers in dataset</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="notebooks/unsupervised/recommendation_systems.html" class="card bl-unsup" id="recsys">
+                    <div class="card-hdr"><div class="card-title">Recommendation Systems</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Collaborative filtering (user-user, item-item), content-based filtering with TF-IDF, matrix factorization. Build Netflix/Amazon-style recommendations.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Collaborative Filtering</span> "Users who liked what you liked also liked this"</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Content-Based Filtering</span> "Because you liked X, here's another similar X"</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">User-User Similarity</span> Find similar users and recommend their liked items</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Item-Item Similarity</span> Find items similar to what user already liked</div>
+                            <div><span class="tag" style="background:#f5f3ff;color:#8b5cf6">Matrix Factorization</span> Decompose sparse user-item matrix into latent factors</div>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- ===== REINFORCEMENT ===== -->
+        <div class="section" id="reinforcement">
+            <div class="sec-hdr"><div class="sec-icon ic-rl">&#127918;</div><h2>Reinforcement Learning</h2></div>
+            <p class="sec-desc">An agent learns by trial and error, receiving rewards for good actions and penalties for bad ones.</p>
+            <div class="cards">
+
+                <a href="notebooks/reinforcement/RL_intro.html" class="card bl-rl" id="rl-intro">
+                    <div class="card-hdr"><div class="card-title">Introduction to Reinforcement Learning</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Core vocabulary: Agent, Environment, State, Action, Reward, Policy, Episode. Model-free vs model-based. Real-world examples.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#fffbeb;color:#d97706">Agent-Environment Loop</span> Agent observes state, takes action, receives reward, updates policy</div>
+                            <div><span class="tag" style="background:#fffbeb;color:#d97706">Policy</span> Strategy mapping states to actions; goal is to find the optimal one</div>
+                            <div><span class="tag" style="background:#fffbeb;color:#d97706">Reward Signal</span> Feedback indicating quality of actions; guides learning</div>
+                            <div><span class="tag" style="background:#fffbeb;color:#d97706">Exploration vs Exploitation</span> Tradeoff between trying new actions and using best known</div>
+                            <div><span class="tag" style="background:#fffbeb;color:#d97706">Model-Free vs Model-Based</span> Learning from experience vs planning with environment model</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="notebooks/reinforcement/QLearning.html" class="card bl-rl" id="qlearning">
+                    <div class="card-hdr"><div class="card-title">Q-Learning</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Model-free RL with Q-table. 4&times;4 grid world navigation. Bellman equation, epsilon-greedy exploration. 500 episodes to optimal path.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#fffbeb;color:#d97706">Q-Table</span> Stores expected cumulative reward for each state-action pair</div>
+                            <div><span class="tag" style="background:#fffbeb;color:#d97706">Bellman Equation</span> Update rule for Q-values incorporating rewards and future values</div>
+                            <div><span class="tag" style="background:#fffbeb;color:#d97706">Epsilon-Greedy</span> Balance exploration (random) vs exploitation (best known)</div>
+                            <div><span class="tag" style="background:#fffbeb;color:#d97706">Off-Policy Learning</span> Learns optimal policy regardless of current exploration behavior</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>4&times;4 Grid</span><span>500 Episodes</span></div>
+                </a>
+
+                <a href="notebooks/reinforcement/dqn.html" class="card bl-rl" id="dqn">
+                    <div class="card-hdr"><div class="card-title">Deep Q-Network (DQN)</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Q-Learning + neural networks for large state spaces. Experience replay, target networks, epsilon-greedy. The approach that mastered Atari games.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#fffbeb;color:#d97706">Deep Q-Network</span> Combines Q-Learning with neural networks for large state spaces</div>
+                            <div><span class="tag" style="background:#fffbeb;color:#d97706">Experience Replay</span> Store and randomly sample past transitions for stable training</div>
+                            <div><span class="tag" style="background:#fffbeb;color:#d97706">Target Network</span> Separate network updated infrequently for stability</div>
+                            <div><span class="tag" style="background:#fffbeb;color:#d97706">Neural Approximation</span> Replaces Q-table with network predicting Q-values</div>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- ===== DEEP LEARNING ===== -->
+        <div class="section" id="deeplearning">
+            <div class="sec-hdr"><div class="sec-icon ic-dl">&#129504;</div><h2>Deep Learning</h2></div>
+            <p class="sec-desc">Neural networks with multiple layers. From basic perceptrons to CNNs for images and LSTMs for sequences.</p>
+            <div class="cards">
+
+                <a href="notebooks/deep-learning/deep_learning_overview.html" class="card bl-dl" id="dl-overview">
+                    <div class="card-hdr"><div class="card-title">Deep Learning Overview</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Neural network fundamentals, activation functions (ReLU, Sigmoid, Tanh, Softmax), backpropagation, common architectures.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">ANN</span> Multi-layer networks with input, hidden, output layers</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">CNN</span> Spatial pattern detection using filters/kernels for images</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">RNN</span> Process sequences with memory via hidden states</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Transformers</span> Self-attention based architecture, parallelizable across sequence</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Backpropagation</span> Algorithm for computing gradients and updating weights</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="notebooks/deep-learning/neural_network_basics.html" class="card bl-dl" id="ann">
+                    <div class="card-hdr"><div class="card-title">Neural Network Basics (ANN)</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">MNIST digit classification. 784 &rarr; 128 (ReLU) &rarr; 64 (ReLU) &rarr; 10 (Softmax). Adam optimizer. 97.78% accuracy in 10 epochs.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Feedforward Network</span> Data flows one direction through layers with no recurrence</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">ReLU Activation</span> max(0, x) introduces non-linearity in hidden layers</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Softmax Activation</span> Converts outputs to probabilities summing to 1 for multi-class</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Adam Optimizer</span> Adaptive learning rate combining momentum with adaptive estimates</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>MNIST (60K train)</span><span>97.78% Accuracy</span></div>
+                </a>
+
+                <a href="notebooks/deep-learning/cnn_image_classification.html" class="card bl-dl" id="cnn">
+                    <div class="card-hdr"><div class="card-title">CNN Image Classification</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">CIFAR-10 color images. Conv2D &rarr; MaxPool &rarr; Conv2D &rarr; MaxPool &rarr; Conv2D &rarr; Dense. Feature extraction, translation invariance. 71.86%.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Conv2D Layers</span> Filter slides across image computing dot products at each position</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">MaxPooling</span> Takes maximum value in window, reducing spatial dimensions</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Feature Maps</span> Output of convolutional layers representing learned features</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Depth-wise Architecture</span> Early layers learn edges, deeper layers learn objects</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>CIFAR-10 (50K, 32&times;32 RGB)</span><span>71.86% Accuracy</span></div>
+                </a>
+
+                <a href="notebooks/deep-learning/rnn_sequence_modeling.html" class="card bl-dl" id="rnn">
+                    <div class="card-hdr"><div class="card-title">RNN Sequence Modeling</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Next-word prediction. Embedding &rarr; SimpleRNN(50) &rarr; Dense. N-gram sequences, hidden states, vanishing gradient problem.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Simple RNN</span> Processes sequences step-by-step with hidden state carrying info</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Recurrent Connection</span> Previous hidden state feeds as input to next step</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Embedding Layer</span> Converts word indices to dense vector representations</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Vanishing Gradient</span> Information loss in long sequences (solved by LSTM)</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>Text Prediction</span><span>200 Epochs</span></div>
+                </a>
+
+                <a href="notebooks/deep-learning/lstm.html" class="card bl-dl" id="lstm">
+                    <div class="card-hdr"><div class="card-title">LSTM (Long Short-Term Memory)</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Gated architecture solving vanishing gradients. Input, Forget, Output gates. Cell state as long-term memory. Text generation.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Forget Gate</span> Decides what past information to discard from cell state</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Input Gate</span> Decides what new information to add to cell state</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Output Gate</span> Decides what cell state information to output</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Cell State</span> "Conveyor belt" carrying information through sequence unchanged</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>Text Generation</span><span>TensorFlow/Keras</span></div>
+                </a>
+
+                <a href="notebooks/deep-learning/lstm_time_series.html" class="card bl-dl" id="lstm-ts">
+                    <div class="card-hdr"><div class="card-title">LSTM for Time Series</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Sales forecasting with stacked LSTMs. LSTM(50) &rarr; LSTM(25) &rarr; Dense(1). Sliding window lookback=5, MinMaxScaler.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Stacked LSTM</span> Multiple LSTM layers with return_sequences for deeper temporal learning</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Sliding Window</span> Uses lookback window of past values to predict next</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">MinMaxScaler</span> Scales values to [0,1] range for neural network training</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">MSE Loss</span> Mean Squared Error appropriate for regression tasks</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>100 sales points</span><span>50 Epochs</span></div>
+                </a>
+
+                <a href="notebooks/deep-learning/multi_layer_perceptron.html" class="card bl-dl" id="mlp">
+                    <div class="card-hdr"><div class="card-title">Multi-Layer Perceptron (MLP)</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">MLPRegressor for house prices. Hidden (64, 32) with ReLU, Adam. Why StandardScaler is essential for NNs. R&sup2; = 0.97.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">MLP</span> Fully connected layers for supervised learning on tabular data</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Hidden Layers</span> Intermediate layers learning non-linear feature transformations</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Feature Scaling</span> StandardScaler normalizes features, essential for neural networks</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Linear Output</span> No activation for regression; softmax/sigmoid for classification</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>10 houses</span><span>R&sup2;=0.97</span></div>
+                </a>
+
+                <a href="notebooks/deep-learning/gans.html" class="card bl-dl" id="gans">
+                    <div class="card-hdr"><div class="card-title">GANs (Generative Adversarial Networks)</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Generator vs Discriminator competing to produce realistic data. DCGAN, WGAN, CycleGAN, StyleGAN variants. Training challenges: mode collapse, instability.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Generator</span> Creates synthetic data from random noise trying to fool discriminator</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Discriminator</span> Classifies real vs fake data, evaluating generator quality</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Minimax Game</span> Generator minimizes, discriminator maximizes loss function</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Mode Collapse</span> Generator learns limited diversity of outputs (training problem)</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Training Balance</span> Networks must stay balanced; discriminator can't be too strong/weak</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="notebooks/deep-learning/autoencoders.html" class="card bl-dl" id="autoencoders">
+                    <div class="card-hdr"><div class="card-title">Autoencoders</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Encoder-decoder networks learning compressed representations. Vanilla, Denoising, Variational (VAE), Convolutional variants. Anomaly detection, image denoising.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Encoder</span> Compresses input into lower-dimensional bottleneck representation</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Decoder</span> Reconstructs input from bottleneck latent representation</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Bottleneck Layer</span> Forced compression learning most important features</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Denoising Autoencoder</span> Learns to reconstruct clean data from corrupted input</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Reconstruction Loss</span> Difference between input and output drives learning</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="notebooks/deep-learning/transfer_learning.html" class="card bl-dl" id="transfer-learning">
+                    <div class="card-hdr"><div class="card-title">Transfer Learning</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Reuse pre-trained models (ResNet, VGG, MobileNet, EfficientNet). Feature extraction vs fine-tuning strategies. When to freeze, when to unfreeze.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Feature Extraction</span> Freeze pre-trained layers, add custom head for new task</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Fine-Tuning</span> Unfreeze and retrain some/all layers with low learning rate</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Pre-trained Models</span> Leverage knowledge from ImageNet or other large datasets</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Early Layers</span> Learn universal features (edges, textures) shared across tasks</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Later Layers</span> Learn task-specific features needing adaptation</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="notebooks/deep-learning/transformers.html" class="card bl-dl" id="transformers">
+                    <div class="card-hdr"><div class="card-title">Transformer Architecture</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Self-attention, multi-head attention, positional encoding. The architecture behind GPT, BERT, and all modern LLMs. Encoder-decoder explained step by step.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Self-Attention</span> Each position attends to all other positions computing relevance</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Multi-Head Attention</span> Multiple attention heads learning different relationships</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Query, Key, Value</span> Three learned projections for attention computation</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Positional Encoding</span> Adds position information since processing is fully parallel</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Encoder-Decoder</span> Encoder processes input, decoder generates output</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="notebooks/deep-learning/regularization.html" class="card bl-dl" id="regularization">
+                    <div class="card-hdr"><div class="card-title">Regularization Techniques</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Prevent overfitting. L1/L2 regularization, Dropout, Batch Normalization, Early Stopping, Data Augmentation, Weight Decay. When to use each.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">When to Use Each</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">L1 (Lasso)</span> Adds sum of absolute weights; drives some to zero for sparsity</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">L2 (Ridge)</span> Adds sum of squared weights; shrinks all proportionally</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Dropout</span> Randomly deactivates neurons during training, forcing redundancy</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Batch Normalization</span> Normalizes layer outputs to zero mean / unit variance</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Early Stopping</span> Stop training when validation loss increases</div>
+                            <div><span class="tag" style="background:#ecfdf5;color:#059669">Data Augmentation</span> Create synthetic variations of training data</div>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+        <!-- ===== ADVANCED ===== -->
+        <div class="section" id="advanced">
+            <div class="sec-hdr"><div class="sec-icon ic-adv">&#128640;</div><h2>Advanced Topics</h2></div>
+            <p class="sec-desc">NLP and Prompt Engineering &mdash; where classical ML meets modern AI.</p>
+            <div class="cards">
+
+                <a href="notebooks/advanced/nlp.html" class="card bl-adv" id="nlp">
+                    <div class="card-hdr"><div class="card-title">NLP Fundamentals</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Full pipeline: tokenization, stopwords, stemming vs lemmatization, BoW, TF-IDF. Word embeddings: Word2Vec, GloVe, FastText, BERT.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">Tokenization</span> Split text into discrete units (words, characters, subwords)</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">Bag of Words</span> Count word frequencies ignoring order and context</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">TF-IDF</span> Weight terms by importance in document vs corpus</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">Word2Vec</span> Learn dense embeddings capturing semantic relationships</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">BERT Embeddings</span> Contextual embeddings where same word gets different vectors per context</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>NLTK, sklearn, gensim</span><span>Text &rarr; Vectors</span></div>
+                </a>
+
+                <a href="notebooks/advanced/prompt_engineering_basics.html" class="card bl-adv" id="prompt-eng">
+                    <div class="card-hdr"><div class="card-title">Prompt Engineering</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">The most comprehensive notebook. Zero/few-shot, Chain-of-Thought, Tree of Thoughts, ReAct, Reflexion. APIs for GPT-4, Claude, Gemini. Debugging &amp; domain-specific prompts.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Techniques</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">Zero-Shot</span> Task performance with instructions only, no examples needed</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">Few-Shot</span> Provide 2-5 examples showing expected pattern and format</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">Chain-of-Thought</span> Instruct model to reason step-by-step before answering</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">Self-Consistency</span> Ask same question multiple times, majority vote on answer</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">Tree of Thoughts</span> Explore multiple reasoning branches evaluating promises</div>
+                        </div>
+                    </div>
+                    <div class="card-meta"><span>16+ sections</span><span>Most comprehensive</span></div>
+                </a>
+
+                <a href="notebooks/advanced/bert_gpt_finetuning.html" class="card bl-adv" id="bert-gpt">
+                    <div class="card-hdr"><div class="card-title">BERT / GPT Fine-Tuning</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">HuggingFace Transformers for sentiment classification, NER, QA. Pre-trained BERT fine-tuning with Trainer API. Pipeline for instant inference.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">BERT Fine-Tuning</span> Adapt bidirectional transformer for classification, NER, QA</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">GPT Fine-Tuning</span> Adapt autoregressive transformer for generation tasks</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">Low Learning Rate</span> Use 2e-5 to 5e-5 to preserve pre-trained knowledge</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">HuggingFace</span> Load 100K+ pre-trained models and tokenizers</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">Classification Heads</span> Remove pre-training head, add custom layers for your task</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="notebooks/advanced/model_deployment.html" class="card bl-adv" id="deployment">
+                    <div class="card-hdr"><div class="card-title">Model Deployment</div><div class="card-badge">Read</div></div>
+                    <p class="card-desc">Notebook to production. Save models (joblib, ONNX), build APIs (FastAPI, Flask), Dockerize, deploy to cloud. Input validation and monitoring.</p>
+                    <div style="font-size:13px;color:#475569;margin-top:10px">
+                        <div style="font-weight:700;margin-bottom:8px;color:#1e293b">Key Concepts</div>
+                        <div style="display:flex;flex-direction:column;gap:6px">
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">Model Serialization</span> Save trained model with joblib, pickle, or ONNX</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">FastAPI / Flask</span> Create REST endpoints wrapping model for predictions</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">Docker</span> Package model and dependencies for reproducible deployment</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">Cloud Deployment</span> Heroku, AWS Lambda, EC2, GCP for different needs</div>
+                            <div><span class="tag" style="background:#fef2f2;color:#dc2626">Monitoring</span> Track prediction latency, error rates, data/model drift</div>
+                        </div>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        <p>Built by <a href="https://github.com/Jacobgokul" target="_blank">Jacobgokul</a> &middot; <a href="https://github.com/Jacobgokul/ML-Playground" target="_blank">Source on GitHub</a></p>
+    </div>
+
+</div>
+
+<script>
+function toggleSidebar(){document.querySelector('.sidebar').classList.toggle('open');document.querySelector('.overlay').classList.toggle('open')}
+const navLinks=document.querySelectorAll('.nav-link');
+window.addEventListener('scroll',()=>{
+    let c='';document.querySelectorAll('.section[id]').forEach(s=>{if(window.scrollY>=s.offsetTop-100)c=s.id});
+    navLinks.forEach(l=>{l.classList.toggle('active',l.getAttribute('href')==='#'+c)})
+});
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener('click',function(e){e.preventDefault();const t=document.querySelector(this.getAttribute('href'));if(t){t.scrollIntoView({behavior:'smooth'});document.querySelector('.sidebar').classList.remove('open');document.querySelector('.overlay').classList.remove('open')}})
+});
+</script>
+</body>
+</html>

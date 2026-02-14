@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Naive Bayes - ML Playground</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8fafc;color:#1e293b;line-height:1.7}
+.top-bar{background:#0f172a;padding:14px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+.top-bar a{color:#94a3b8;text-decoration:none;font-size:14px;font-weight:600;transition:.15s}
+.top-bar a:hover{color:#f1f5f9}
+.top-bar .sep{color:#334155}
+.top-bar .current{color:#60a5fa}
+.container{max-width:900px;margin:0 auto;padding:40px 32px 80px}
+h1{font-size:32px;font-weight:800;letter-spacing:-.8px;margin-bottom:8px;color:#0f172a}
+.subtitle{font-size:16px;color:#64748b;margin-bottom:32px;border-bottom:2px solid #e2e8f0;padding-bottom:20px}
+h2{font-size:22px;font-weight:700;margin:36px 0 14px;color:#0f172a;letter-spacing:-.3px}
+h3{font-size:17px;font-weight:700;margin:24px 0 10px;color:#1e293b}
+p{margin-bottom:14px;font-size:15px;color:#334155}
+ul,ol{margin:0 0 16px 24px;font-size:15px;color:#334155}
+li{margin-bottom:6px}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:20px 0}
+.card-title{font-size:14px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px}
+.formula{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:15px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.8}
+.code{background:#0f172a;color:#e2e8f0;padding:20px 24px;border-radius:10px;font-family:'Courier New',monospace;font-size:13px;margin:16px 0;overflow-x:auto;white-space:pre;line-height:1.6}
+.highlight{background:#eff6ff;border-left:4px solid #3b82f6;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.highlight p{margin:0;color:#1e40af;font-size:14px}
+.warning{background:#fef3c7;border-left:4px solid #f59e0b;padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning p{margin:0;color:#92400e;font-size:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.grid-item{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px}
+.grid-item h4{font-size:14px;font-weight:700;margin-bottom:6px}
+.grid-item p{font-size:13px;margin:0}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:#f1f5f9;color:#475569;margin:2px}
+.pros{color:#059669}.cons{color:#dc2626}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+th{background:#f1f5f9;padding:10px 14px;text-align:left;font-weight:700;border:1px solid #e2e8f0}
+td{padding:10px 14px;border:1px solid #e2e8f0}
+@media(max-width:700px){.container{padding:20px 16px 60px}.grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="top-bar">
+<a href="../../index.html">ML Playground</a>
+<span class="sep">/</span>
+<span class="current">Naive Bayes</span>
+</div>
+<div class="container">
+
+<h1>Naive Bayes Classifier</h1>
+<p class="subtitle">A fast, probabilistic classifier based on Bayes' theorem with the "naive" assumption of feature independence.</p>
+
+<h2>What is Naive Bayes?</h2>
+<p>Naive Bayes is a family of probabilistic classifiers that applies Bayes' theorem with a strong (naive) assumption: all features are independent of each other given the class label. Despite this simplification, it works surprisingly well in practice, especially for text classification.</p>
+
+<div class="highlight"><p>Naive Bayes is one of the fastest classifiers. It needs very little training data and scales linearly with the number of features.</p></div>
+
+<h2>Bayes' Theorem</h2>
+<p>The foundation of the algorithm:</p>
+<div class="formula">P(Class | Features) = P(Features | Class) * P(Class) / P(Features)
+
+Where:
+  P(Class | Features) = Posterior probability (what we want)
+  P(Features | Class) = Likelihood (how likely these features appear in this class)
+  P(Class)            = Prior probability (how common is this class)
+  P(Features)         = Evidence (normalizing constant)</div>
+
+<h2>The "Naive" Assumption</h2>
+<p>The algorithm assumes every feature is independent of every other feature. For example, in spam detection, the presence of the word "free" is considered independent of the presence of "money". This is rarely true in reality, but the algorithm still performs well because:</p>
+<ul>
+<li>The ranking of probabilities matters more than their exact values</li>
+<li>Dependencies between features often cancel each other out</li>
+<li>The simplification makes the math tractable and fast</li>
+</ul>
+
+<h2>Types of Naive Bayes</h2>
+<div class="grid">
+<div class="grid-item">
+<h4>Gaussian NB</h4>
+<p>Features are continuous and follow a normal distribution. Used for numeric data like height, weight, temperature.</p>
+</div>
+<div class="grid-item">
+<h4>Multinomial NB</h4>
+<p>Features are discrete counts (word frequencies). The go-to choice for text classification with bag-of-words or TF-IDF.</p>
+</div>
+<div class="grid-item">
+<h4>Bernoulli NB</h4>
+<p>Features are binary (0 or 1). Used when you care about presence/absence of a feature, not its frequency.</p>
+</div>
+<div class="grid-item">
+<h4>Complement NB</h4>
+<p>Variation of Multinomial NB that handles imbalanced datasets better. Uses complement of each class for weight calculation.</p>
+</div>
+</div>
+
+<h2>How It Works (Step by Step)</h2>
+<div class="card">
+<div class="card-title">Algorithm Steps</div>
+<ol>
+<li><strong>Calculate prior probabilities</strong> — P(Class) for each class from training data</li>
+<li><strong>Calculate likelihoods</strong> — P(Feature | Class) for each feature-class combination</li>
+<li><strong>For a new sample</strong> — multiply the prior by all feature likelihoods for each class</li>
+<li><strong>Pick the class</strong> with the highest posterior probability</li>
+</ol>
+</div>
+
+<h2>Example: Email Spam Detection</h2>
+<p>Given an email with words ["free", "winner", "click"], classify it as spam or not spam:</p>
+<div class="formula">P(Spam | "free","winner","click") ∝ P(Spam) × P("free"|Spam) × P("winner"|Spam) × P("click"|Spam)
+P(Not Spam | "free","winner","click") ∝ P(Not Spam) × P("free"|Not Spam) × P("winner"|Not Spam) × P("click"|Not Spam)
+
+Compare the two → pick the higher one</div>
+
+<h2>Code Implementation</h2>
+<div class="code">from sklearn.naive_bayes import GaussianNB, MultinomialNB
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report
+
+# --- Example 1: Gaussian NB for numeric data ---
+from sklearn.datasets import load_iris
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+gnb = GaussianNB()
+gnb.fit(X_train, y_train)
+y_pred = gnb.predict(X_test)
+print(f"Gaussian NB Accuracy: {accuracy_score(y_test, y_pred):.2f}")
+
+# --- Example 2: Multinomial NB for text ---
+emails = ["free money now", "meeting at 3pm", "win a prize free",
+          "project deadline tomorrow", "claim your reward", "lunch plans today"]
+labels = [1, 0, 1, 0, 1, 0]  # 1=spam, 0=not spam
+
+vectorizer = TfidfVectorizer()
+X = vectorizer.fit_transform(emails)
+
+mnb = MultinomialNB()
+mnb.fit(X, labels)
+
+new_email = vectorizer.transform(["free prize winner"])
+print(f"Prediction: {'Spam' if mnb.predict(new_email)[0] else 'Not Spam'}")
+print(f"Probabilities: {mnb.predict_proba(new_email)}")</div>
+
+<h2>Laplace Smoothing</h2>
+<p>What if a word never appeared in the training data for a certain class? Its probability would be 0, making the entire product 0. Laplace smoothing adds a small count (alpha) to every feature to prevent zero probabilities:</p>
+<div class="formula">P(word | class) = (count(word, class) + alpha) / (total_words_in_class + alpha * vocabulary_size)
+
+Default alpha = 1 (add-one smoothing)</div>
+
+<h2>When to Use Naive Bayes</h2>
+<table>
+<tr><th>Good For</th><th>Not Ideal For</th></tr>
+<tr><td>Text classification (spam, sentiment, topic)</td><td>Features with strong dependencies</td></tr>
+<tr><td>Small training datasets</td><td>Numeric data with complex relationships</td></tr>
+<tr><td>Real-time predictions (very fast)</td><td>When you need precise probability estimates</td></tr>
+<tr><td>Multi-class classification</td><td>Regression tasks</td></tr>
+<tr><td>Baseline model for any classification task</td><td>Image classification (CNNs are better)</td></tr>
+</table>
+
+<div class="warning"><p>Despite the independence assumption being "wrong", Naive Bayes often outperforms more complex models on text data, especially with limited training samples.</p></div>
+
+<h2>Key Parameters</h2>
+<ul>
+<li><strong>alpha</strong> (smoothing) — Default 1.0. Smaller values = less smoothing. Set to 0 for no smoothing</li>
+<li><strong>fit_prior</strong> — Whether to learn class priors from data (True) or use uniform priors (False)</li>
+<li><strong>var_smoothing</strong> (GaussianNB) — Portion of largest variance added to all variances for stability</li>
+</ul>
+
+</div>
+</body>
+</html>
